@@ -1,0 +1,123 @@
+.education-section {
+  padding: 3rem 1%;
+  color: #e5e7eb;
+  /* box-shadow: inset 0 1px 0 rgba(129, 140, 248, 0.15); */
+}
+
+.education-container {
+  max-width: 1200px; /* matches hero max-width */
+  margin: 0 auto;
+}
+
+.education-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.education-header h2 {
+  font-size: 4rem;
+  font-weight: 700;
+  color: white;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+
+  transform: translateY(0);
+  text-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+
+  transition: transform 0.35s ease, text-shadow 0.35s ease;
+  text-shadow: 0 12px 24px rgba(79, 70, 229, 0.6);
+  letter-spacing: 1px;
+}
+
+.education-header:hover h2 {
+  transform: translateY(-6px);
+}
+
+.education-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.education-card {
+  background: rgba(31, 41, 55, 0.6);
+  border: 3px solid rgba(148, 163, 184, 0.3);
+  border-radius: 1rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 12px rgba(79, 70, 229, 0.22);
+}
+
+.education-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(79, 70, 229, 0.4);
+}
+
+.education-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+
+  box-shadow: 0 4px 20px rgba(79, 70, 229, 0.35),
+    0 0 30px rgba(129, 140, 248, 0.25);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.education-card:hover .education-icon {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(79, 70, 229, 0.45),
+    0 0 40px rgba(129, 140, 248, 0.4);
+}
+
+.education-icon img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  background: white;
+  border-radius: 100%;
+}
+
+.education-card h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-family: "Inter", sans-serif;
+}
+
+.score {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #818cf8;
+  margin-bottom: 0.5rem;
+  font-family: "Inter", sans-serif;
+  transform: translateY(-4px);
+  text-shadow: 0 6px 18px rgba(79, 70, 229, 0.55);
+}
+
+.school {
+  font-size: 1.4rem;
+  color: #cbd5f5;
+  margin-bottom: 0.25rem;
+}
+
+.location {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  font-family: "Inter", sans-serif;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .education-grid {
+    grid-template-columns: 1fr;
+  }
+}

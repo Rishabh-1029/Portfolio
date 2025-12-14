@@ -4,7 +4,7 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #000000, #111827, #000000);
+  /* background: linear-gradient(135deg, #000000, #111827, #000000); */
   color: white;
   padding: 0 5%;
 }
@@ -36,16 +36,22 @@
 }
 
 .hero-title span {
+  display: inline-block;
   background: linear-gradient(90deg, #818cf8, #a855f7);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   cursor: pointer;
+
+  transition: transform 0.3s ease, text-shadow 0.3s ease, background 0.3s ease;
 }
 
 .hero-title span:hover {
   background: linear-gradient(90deg, #a855f7, #818cf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+
+  transform: translateY(-4px);
+  text-shadow: 0 4px 12px rgba(79, 70, 229, 0.45);
 }
 
 .hero-tagline {
