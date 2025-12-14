@@ -2,6 +2,7 @@ import "./App.css";
 import Hero from "./Hero/Hero";
 import Navbar from "./Navbar/Navbar";
 import Education from "./Education/Education";
+import Experience from "./Experience/Experience";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Navbar />
       <Hero />
       <Education />
+      <Experience />
     </>
   );
 }
