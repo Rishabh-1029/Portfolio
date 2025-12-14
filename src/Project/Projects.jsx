@@ -15,9 +15,10 @@ const Projects = () => {
         {/* Header */}
         <div className="projects-header">
           <h2>PROJECTS</h2>
-          <p>
-            A selection of projects where I applied machine learning, system
-            design, and full-stack engineering to solve real-world problems.
+          <p className="section-subtext">
+            Exploring multiple domains through projects in{" "}
+            <strong>Full-Stack, AI, Computer Vision,</strong> and{" "}
+            <strong>LLMs</strong>.
           </p>
         </div>
 

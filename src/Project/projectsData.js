@@ -52,7 +52,7 @@ export const projectsData = [
     tech: ["Python", "PyTorch", "YOLOv8", "EasyOCR", "OpenCV", "FastAPI"],
     gradient: "from-rose-600",
     live: "",
-    github: "https://github.com/Rishabh-1029/CarAdvisor-AI",
+    github: "https://github.com/Rishabh-1029/ANPR",
     logo: ANPRLOGO,
   },
   {
