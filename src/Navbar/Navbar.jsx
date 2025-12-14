@@ -5,7 +5,13 @@ import {
   AiOutlineUser,
   AiOutlineMail,
 } from "react-icons/ai";
-import { FaGithub, FaBars, FaTimes } from "react-icons/fa";
+import {
+  FaGithub,
+  FaBars,
+  FaTimes,
+  FaGraduationCap,
+  FaAward,
+} from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import "./Navbar.css";
 
@@ -27,15 +33,28 @@ const Navbar = () => {
             </a>
           </li>
           <li>
+            <a href="#experience" onClick={handleLinkClick}>
+              <AiOutlineUser />
+              Experience
+            </a>
+          </li>
+          <li>
             <a href="#projects" onClick={handleLinkClick}>
               <AiOutlineProject />
               Projects
             </a>
           </li>
+
           <li>
-            <a href="#about" onClick={handleLinkClick}>
-              <AiOutlineUser />
-              About
+            <a href="#education" onClick={handleLinkClick}>
+              <FaGraduationCap />
+              Education
+            </a>
+          </li>
+          <li>
+            <a href="#achievements" onClick={handleLinkClick}>
+              <FaAward />
+              Achievements
             </a>
           </li>
           <li>
