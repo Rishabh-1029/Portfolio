@@ -5,16 +5,22 @@ import Education from "./Education/Education";
 import Experience from "./Experience/Experience";
 import Skills from "./Skills/Skills";
 import Projects from "./Project/Projects";
+import Contact from "./Contact/Contact";
+import Footer from "./Footer/Footer";
+import Achievements from "./Achievements/Achievements";
 
 function App() {
   return (
     <>
       <Navbar />
       <Hero />
-      <Education />
       <Experience />
-      <Skills />
       <Projects />
+      <Skills />
+      <Education />
+      <Achievements />
+      <Contact />
+      <Footer />
     </>
   );
 }
