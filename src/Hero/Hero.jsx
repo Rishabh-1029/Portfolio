@@ -12,21 +12,27 @@ const Hero = () => {
           </h1>
 
           <p className="hero-tagline">
-            An <strong>AI-focused Computer Science Engineer</strong> passionate
-            about building <strong>intelligent</strong>, scalable, and
-            user-centric web applications.
+            B.Tech <strong>Computer Science Engineering</strong> student at{" "}
+            <strong>Bennett University</strong>, focused on building end-to-end{" "}
+            <strong>scalable applications</strong> by combining{" "}
+            <strong>Frontend, Backend,</strong> and <strong>AI</strong>.
           </p>
 
           <p className="hero-subtext">
-            I enjoy working at the intersection of <strong>AI and Web</strong>,
-            turning ideas into real-world products.
+            I actively learn, experiment, and contribute to impactful personal
+            and open-source projects.
           </p>
 
           <div className="hero-buttons">
             <a href="#projects" className="btn primary">
               View Projects
             </a>
-            <a href="/resume.pdf" download className="btn secondary">
+            <a
+              href="https://drive.google.com/uc?export=download&id=1nM729CremlCaPDt--d75wJFrxIE6lZ4h"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn secondary"
+            >
               Download Resume
             </a>
           </div>
