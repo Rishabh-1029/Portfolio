@@ -1,7 +1,7 @@
 import React from "react";
 import "./Projects.css";
 import { projectsData } from "./projectsData";
-import { FaChartBar, FaShieldAlt, FaGithub } from "react-icons/fa";
+import { FaChartBar, FaShieldAlt, FaGithub, FaCode } from "react-icons/fa";
 
 const iconMap = {
   chart: <FaChartBar />,
@@ -56,6 +56,12 @@ const Projects = () => {
                     <FaGithub />
                     GitHub
                   </a>
+                  {project.live?.trim() && (
+                    <a href={project.live} target="_blank" rel="noreferrer">
+                      <FaCode />
+                      {project.title}.com
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
