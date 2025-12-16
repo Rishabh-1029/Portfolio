@@ -1,10 +1,12 @@
 This repository contains my personal portfolio website.
 
+Link: https://rishabh-surana.netlify.app/
+
 ---
 
 ## Tech Stack
 
-ReactJS, HTML, CSS, JavaScript
+ReactJS, HTML, CSS, JavaScript, EmailJS
 
 ---
 
