@@ -11,6 +11,7 @@ import {
   FaTimes,
   FaGraduationCap,
   FaAward,
+  FaCode,
 } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import "./Navbar.css";
@@ -30,6 +31,12 @@ const Navbar = () => {
             <a href="#home" onClick={handleLinkClick}>
               <AiOutlineHome />
               Home
+            </a>
+          </li>
+          <li>
+            <a href="#skills" onClick={handleLinkClick}>
+              <FaCode />
+              Skills
             </a>
           </li>
           <li>
