@@ -74,7 +74,7 @@ export const projectsData = [
       "A functional React dashboard according to a specific Figma design created as part of an on-site internship training task at Vasitum Tech.",
     tech: ["HTML", "CSS", "JavaScript", "EasyOCR", "ReactJS", "REST API"],
     gradient: "royal-blue",
-    live: "",
+    live: "https://vasitum-rishabh-dashboard.netlify.app/",
     github: "https://github.com/Rishabh-1029/Vasitum-dashboard",
     logo: VasitumLogo,
   },
