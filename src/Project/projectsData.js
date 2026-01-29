@@ -8,6 +8,18 @@ import BlogstoryLogo from "../assets/BlogStory.png";
 export const projectsData = [
   {
     id: 1,
+    title: "TrueDrive",
+    period: "Nov 2025 – Feb 2026",
+    description:
+      "AI-powered car recommendation system with expense forecasting and EMI analysis for informed car-buying decisions.",
+    tech: ["Python", "ReactJS", "FastAPI", "Scikit-learn", "Pandas", "SQL"],
+    gradient: "navy-gradient",
+    live: "",
+    github: "https://github.com/Rishabh-1029/CarAdvisor-AI",
+    logo: TrurDrive,
+  },
+  {
+    id: 2,
     title: "EasyLearn",
     period: "November 2025 – December 2025",
     description:
@@ -19,7 +31,7 @@ export const projectsData = [
     logo: EasyLearn,
   },
   {
-    id: 2,
+    id: 3,
     title: "VIDES",
     period: "June 2025 – July 2025",
     description:
@@ -29,19 +41,6 @@ export const projectsData = [
     live: "",
     github: "https://github.com/Rishabh-1029/VIDES",
     logo: VIDESLOGO,
-  },
-  ,
-  {
-    id: 3,
-    title: "TrueDrive",
-    period: "Jan 2025 – May 2025",
-    description:
-      "ML-based web system that helps users choose the right car based on their preferences and predicts future expenses using regression models.",
-    tech: ["Python", "ReactJS", "FastAPI", "Scikit-learn", "Pandas", "SQL"],
-    gradient: "navy-gradient",
-    live: "",
-    github: "https://github.com/Rishabh-1029/CarAdvisor-AI",
-    logo: TrurDrive,
   },
   {
     id: 4,
