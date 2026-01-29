@@ -25,7 +25,7 @@ const Education = () => {
     },
     {
       title: "B.Tech CSE (AI & ML)",
-      score: "CGPA 8.60",
+      score: "CGPA 8.71",
       school: "Bennett University",
       location: "Greater Noida, UP, India (2022-2026)",
       colorFrom: "#a855f7",
