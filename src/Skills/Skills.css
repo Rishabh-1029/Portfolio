@@ -21,7 +21,9 @@
   letter-spacing: 1px;
   text-shadow: 0 12px 24px rgba(79, 70, 229, 0.55);
   cursor: pointer;
-  transition: transform 0.35s ease, text-shadow 0.35s ease;
+  transition:
+    transform 0.35s ease,
+    text-shadow 0.35s ease;
 }
 
 .skills-header:hover h2 {
@@ -60,7 +62,9 @@
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  transition: transform 0.35s ease, box-shadow 0.35s ease,
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
     border-color 0.35s ease;
   margin-bottom: 3rem;
   overflow: hidden;
@@ -70,7 +74,8 @@
 /* Hover effects */
 .skills-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.18),
+  box-shadow:
+    0 10px 25px rgba(79, 70, 229, 0.18),
     0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
@@ -113,7 +118,9 @@
   box-shadow: 0 8px 16px rgba(79, 70, 180, 0.45);
   flex-shrink: 0;
   position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* Icon glow */
@@ -159,7 +166,10 @@
   color: #cbd5f5;
   border: 1px solid rgba(148, 163, 184, 0.25);
   font-family: "Inter", sans-serif;
-  transition: all 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    all 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .skill-pill svg {
