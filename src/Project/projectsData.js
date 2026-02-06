@@ -9,7 +9,7 @@ export const projectsData = [
   {
     id: 1,
     title: "TrueDrive",
-    period: "Nov 2025 – Feb 2026",
+    period: "November 2025 – February 2026",
     description:
       "AI-powered car recommendation system with expense forecasting and EMI analysis for informed car-buying decisions.",
     tech: ["Python", "ReactJS", "FastAPI", "Scikit-learn", "Pandas", "SQL"],
