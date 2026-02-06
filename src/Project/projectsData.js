@@ -14,7 +14,7 @@ export const projectsData = [
       "AI-powered car recommendation system with expense forecasting and EMI analysis for informed car-buying decisions.",
     tech: ["Python", "ReactJS", "FastAPI", "Scikit-learn", "Pandas", "SQL"],
     gradient: "navy-gradient",
-    live: "",
+    live: "https://truedrive.netlify.app/",
     github: "https://github.com/Rishabh-1029/CarAdvisor-AI",
     logo: TrurDrive,
   },
