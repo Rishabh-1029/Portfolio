@@ -10,7 +10,7 @@ import { FaBuilding } from "react-icons/fa";
 const companyIconMap = {
   "Vasitum Tech (Maven Workforce)": VasitumLogo,
   "Comvision India Ltd.": ComvisionLogo,
-  "Nervesparks": Nervesparks
+  "Nervesparks": Nervesparks India Private Limited
 };
 
 const Experience = () => {
