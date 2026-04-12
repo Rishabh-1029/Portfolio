@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+*.egg-info/
+
+# Environment & Secrets — NEVER COMMIT THESE
+.env
+.env.*
+
+# Database
+*.db
+*.sqlite3
+
+# macOS
+.DS_Store

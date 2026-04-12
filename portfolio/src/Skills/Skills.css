@@ -1,0 +1,186 @@
+.skills-section {
+  padding: 6rem 5%;
+  position: relative;
+  z-index: 10;
+}
+
+.skills-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.skills-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.skills-header h2 {
+  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.skills-header p {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: auto;
+  line-height: 1.6;
+}
+
+.skills-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+}
+
+@keyframes ambientGlow {
+  0% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
+  50% { box-shadow: 0 15px 40px rgba(0, 240, 255, 0.08), inset 0 0 0 1px rgba(0, 240, 255, 0.15); }
+  100% { box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
+}
+
+.skills-card {
+  border-radius: 20px;
+  background: rgba(10, 15, 25, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  animation: ambientGlow 6s infinite ease-in-out;
+}
+
+/* A moving scanner line effect */
+.skills-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary-accent), var(--secondary-accent), transparent);
+  animation: scanLine 8s infinite linear;
+}
+
+@keyframes scanLine {
+  0% { left: -100%; }
+  50% { left: 150%; }
+  100% { left: 150%; }
+}
+
+.skills-card:hover {
+  transform: translateY(-5px);
+  background: rgba(15, 20, 30, 0.7);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 240, 255, 0.3);
+}
+
+.skills-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+@keyframes floatIcon {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0px); }
+}
+
+.skills-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-accent);
+  flex-shrink: 0;
+  position: relative;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border-highlight);
+  transition: all 0.4s ease;
+  animation: floatIcon 4s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+.skills-card:hover .skills-icon {
+  transform: scale(1.1) rotate(5deg);
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 25px var(--primary-glow);
+  color: #fff;
+  animation: none;
+}
+
+.skills-card-header h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+}
+
+.skill-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.skill-pill svg {
+  font-size: 1.3rem;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.skill-pill:hover {
+  transform: translateY(-3px);
+  background: rgba(0, 240, 255, 0.15);
+  border-color: var(--primary-accent);
+  box-shadow: 0 8px 20px var(--primary-glow);
+  color: #fff;
+}
+
+.skill-pill:hover svg {
+  color: var(--primary-accent);
+}
+
+@media (max-width: 768px) {
+  .skills-card-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .skills-card-header h3 {
+    font-size: 1.6rem;
+  }
+  .skills-list {
+    justify-content: center;
+  }
+  .skills-card {
+    padding: 2rem 1.5rem;
+  }
+}

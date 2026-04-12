@@ -1,0 +1,29 @@
+# ============================
+# Secrets — NEVER COMMIT THESE
+# ============================
+.env
+.env.*
+!.env.example
+
+# ======= Python / Backend =======
+__pycache__/
+*.py[cod]
+*.pyo
+backend/venv/
+backend/.venv/
+*.egg-info/
+backend/*.db
+backend/*.sqlite3
+
+# ======= Node / Frontend =======
+portfolio/node_modules/
+portfolio/dist/
+portfolio/build/
+
+# ======= macOS =======
+.DS_Store
+**/.DS_Store
+
+# ======= Logs =======
+*.log
+npm-debug.log*
