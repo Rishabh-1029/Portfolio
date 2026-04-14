@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import bcrypt
 import jwt
+import json
 from datetime import datetime, timedelta
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -227,7 +228,25 @@ def get_analytics(db: Session = Depends(get_db), _: bool = Depends(get_current_a
 @app.post("/api/analytics", response_model=schemas.AnalyticEventResponse)
 @limiter.limit("20/minute")
 def create_analytics(item: schemas.AnalyticEventCreate, request: Request, db: Session = Depends(get_db)):
-    db_item = models.AnalyticEvent(**item.model_dump(), timestamp=datetime.utcnow().isoformat())
+    # Resolve real visitor IP (supports reverse proxies / Render / CDNs)
+    forwarded = request.headers.get("X-Forwarded-For")
+    client_ip = forwarded.split(",")[0].strip() if forwarded else (
+        request.client.host if request.client else "unknown"
+    )
+
+    # Merge IP into whatever metadata the frontend already sent
+    try:
+        meta = json.loads(item.metadata_json) if item.metadata_json else {}
+    except Exception:
+        meta = {}
+    meta["ip"] = client_ip
+
+    db_item = models.AnalyticEvent(
+        event_type=item.event_type,
+        path=item.path,
+        metadata_json=json.dumps(meta),
+        timestamp=datetime.utcnow().isoformat()
+    )
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
