@@ -20,13 +20,16 @@ const Hero = () => {
           </h1>
 
           <p className="hero-tagline">
-            <strong>Software Engineer</strong> and a <strong>B.Tech CSE</strong> undergrad at{" "}
-            <strong>Bennett University</strong>. Specialize in architecting intelligent systems, not just writing scripts.{" "}
-            From building custom AI/ML pipelines to designing reliable and scalable systems.{" "}
+            <strong>Software Engineer</strong> and a <strong>B.Tech CSE</strong>{" "}
+            graduate from <strong>Bennett University</strong>. Specialize in
+            architecting intelligent systems, not just writing scripts. From
+            building custom AI/ML pipelines to designing reliable and scalable
+            systems.{" "}
           </p>
 
           <p className="hero-subtext">
-            I bridge the gap between core dev skills and product-focused infrastructure.
+            I bridge the gap between core dev skills and product-focused
+            infrastructure.
           </p>
 
           <div className="hero-buttons">

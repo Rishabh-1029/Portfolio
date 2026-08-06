@@ -40,10 +40,10 @@ const Education = () => {
         <div className="education-header">
           <h2>
             <span className="gradient-text">EDUCATION</span>
+            <p className="section-subtext">
+              Academic qualifications and educational background
+            </p>
           </h2>
-          <p className="section-subtext">
-            Academic qualifications and educational background
-          </p>
         </div>
 
         <div className="education-grid">
