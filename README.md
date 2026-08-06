@@ -37,4 +37,4 @@ This platform flips that script. It is built as a **Headless CMS architecture**.
 
 ---
 
->>> Creating, Learning, and Evolving
+``` Creating, Learning, and Evolving ```
