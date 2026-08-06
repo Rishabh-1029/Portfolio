@@ -8,16 +8,28 @@ const Contact = () => {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
 
+  const openEmailFallback = () => {
+    const subject = encodeURIComponent(`Portfolio message from ${formData.name}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || "Not provided"}\n\n${formData.message}`
+    );
+
+    window.location.href = `mailto:rspsurana@gmail.com?subject=${subject}&body=${body}`;
+  };
+
   const sendEmail = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await axios.post(`${API_BASE_URL}/api/messages`, formData);
+      await axios.post(`${API_BASE_URL}/api/messages`, formData, {
+        timeout: 12000,
+      });
       alert("Thank You for connecting, Message sent successfully!");
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (err) {
       console.error(err);
-      alert("Something went wrong or hit rate limit. Please try again later.");
+      alert("The message server is taking too long. Opening your email app instead.");
+      openEmailFallback();
     }
     setSubmitting(false);
   };
@@ -26,7 +38,9 @@ const Contact = () => {
     <section id="contact" className="contact-section">
       <div className="contact-container">
         <div className="contact-header">
-          <h2>GET IN TOUCH</h2>
+          <h2>
+            GET IN <span className="gradient-text">TOUCH</span>
+          </h2>
           <p>Feel free to reach out — I’d love to connect.</p>
         </div>
 

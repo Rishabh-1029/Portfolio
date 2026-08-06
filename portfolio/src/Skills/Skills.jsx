@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { API_BASE_URL } from "../api.js";
 import "./Skills.css";
+import { usePublicContent } from "../content/usePublicContent.js";
 import {
   SiPytorch,
   SiTensorflow,
@@ -74,52 +72,23 @@ const getCategoryIcon = (category) => categoryIconMap[category] || <FaTools />;
 const getSkillIcon = (skillName) => skillIconMap[skillName.trim()] || <FaCode />;
 
 const Skills = () => {
-  const [skillsData, setSkillsData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchSkills = async () => {
-      try {
-        const res = await axios.get(`${API_BASE_URL}/api/skills`);
-        setSkillsData(res.data);
-      } catch (err) {
-        console.error("Failed to fetch skills:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchSkills();
-  }, []);
+  const { skills: skillsData } = usePublicContent();
 
   return (
     <section id="skills" className="skills-section">
       <div className="skills-container">
         {/* Header */}
         <div className="skills-header">
-          <h2>TECHNICAL SKILLS</h2>
+          <h2>
+            TECHNICAL <span className="gradient-text">SKILLS</span>
+          </h2>
           <p>
             Technologies, programming languages, and core concepts I work with
           </p>
         </div>
 
         {/* Vertical stacked cards */}
-        {isLoading ? (
-          Array.from({ length: 3 }).map((_, idx) => (
-            <div key={idx} className="skills-card hover-lift" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-              <div className="skills-card-header" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div className="skeleton skeleton-icon" style={{width: '30px', height: '30px'}}></div>
-                <div className="skeleton skeleton-title" style={{width: '40%', margin: 0}}></div>
-              </div>
-              <div className="skills-list" style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <div className="skeleton" style={{width: '100px', height: '36px', borderRadius: '18px'}}></div>
-                <div className="skeleton" style={{width: '120px', height: '36px', borderRadius: '18px'}}></div>
-                <div className="skeleton" style={{width: '90px', height: '36px', borderRadius: '18px'}}></div>
-                <div className="skeleton" style={{width: '140px', height: '36px', borderRadius: '18px'}}></div>
-                <div className="skeleton" style={{width: '110px', height: '36px', borderRadius: '18px'}}></div>
-              </div>
-            </div>
-          ))
-        ) : skillsData.length === 0 ? (
+        {skillsData.length === 0 ? (
            <p style={{textAlign: 'center', color: 'var(--text-muted)'}}>No skills found. Add some in the admin dashboard.</p>
         ) : (
           skillsData.map((categoryObj, idx) => {

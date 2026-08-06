@@ -16,7 +16,8 @@ from core.config import settings
 from core import models, schemas
 
 # Create all tables
-models.Base.metadata.create_all(bind=engine)
+if settings.AUTO_CREATE_TABLES:
+    models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -40,6 +41,51 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def ordered_items(db: Session, model):
+    return db.query(model).order_by(model.order_index.asc(), model.id.asc()).all()
+
+def serialize_project(item: models.Project):
+    return {
+        "id": item.id,
+        "order_index": item.order_index or 0,
+        "title": item.title or "",
+        "period": item.period or "",
+        "description": item.description or "",
+        "tech": item.tech or "",
+        "github": item.github,
+        "live": item.live,
+        "logo": item.logo,
+    }
+
+def serialize_experience(item: models.Experience):
+    return {
+        "id": item.id,
+        "order_index": item.order_index or 0,
+        "role": item.role or "",
+        "company": item.company or "",
+        "period": item.period or "",
+        "description": item.description or "[]",
+    }
+
+def serialize_skill(item: models.Skill):
+    return {
+        "id": item.id,
+        "order_index": item.order_index or 0,
+        "category": item.category or "",
+        "items": item.items or "",
+    }
+
+def serialize_blog(item: models.Blog):
+    return {
+        "id": item.id,
+        "order_index": item.order_index or 0,
+        "title": item.title or "",
+        "image": item.image,
+        "content_md": item.content_md or "",
+        "external_url": item.external_url,
+        "published_date": item.published_date or "",
+    }
 
 # Auth Dependency
 def verify_token(token: str = Depends(lambda: "")): # Simplified for header parsing below
@@ -74,10 +120,19 @@ def login(login_data: schemas.LoginRequest, request: Request):
 def verify_admin_token(_: bool = Depends(get_current_admin)):
     return {"valid": True}
 
+@app.get("/api/public-content", response_model=schemas.PublicContentResponse)
+def get_public_content(db: Session = Depends(get_db)):
+    return {
+        "projects": [serialize_project(item) for item in ordered_items(db, models.Project)],
+        "experiences": [serialize_experience(item) for item in ordered_items(db, models.Experience)],
+        "skills": [serialize_skill(item) for item in ordered_items(db, models.Skill)],
+        "blogs": [serialize_blog(item) for item in ordered_items(db, models.Blog)],
+    }
+
 # --- PROJECTS ---
 @app.get("/api/projects", response_model=list[schemas.ProjectResponse])
 def get_projects(db: Session = Depends(get_db)):
-    return db.query(models.Project).order_by(models.Project.order_index.asc()).all()
+    return [serialize_project(item) for item in ordered_items(db, models.Project)]
 
 @app.post("/api/projects", response_model=schemas.ProjectResponse)
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db), _: bool = Depends(get_current_admin)):
@@ -118,7 +173,7 @@ def update_project_order(item_id: int, order_index: int, db: Session = Depends(g
 # --- EXPERIENCES ---
 @app.get("/api/experiences", response_model=list[schemas.ExperienceResponse])
 def get_experiences(db: Session = Depends(get_db)):
-    return db.query(models.Experience).order_by(models.Experience.order_index.asc()).all()
+    return [serialize_experience(item) for item in ordered_items(db, models.Experience)]
 
 @app.post("/api/experiences", response_model=schemas.ExperienceResponse)
 def create_experience(item: schemas.ExperienceCreate, db: Session = Depends(get_db), _: bool = Depends(get_current_admin)):
@@ -159,7 +214,7 @@ def update_experience_order(item_id: int, order_index: int, db: Session = Depend
 # --- SKILLS ---
 @app.get("/api/skills", response_model=list[schemas.SkillResponse])
 def get_skills(db: Session = Depends(get_db)):
-    return db.query(models.Skill).order_by(models.Skill.order_index.asc()).all()
+    return [serialize_skill(item) for item in ordered_items(db, models.Skill)]
 
 @app.post("/api/skills", response_model=schemas.SkillResponse)
 def create_skill(item: schemas.SkillCreate, db: Session = Depends(get_db), _: bool = Depends(get_current_admin)):
@@ -255,7 +310,7 @@ def create_analytics(item: schemas.AnalyticEventCreate, request: Request, db: Se
 # --- BLOGS (CMS) ---
 @app.get("/api/blogs", response_model=list[schemas.BlogResponse])
 def get_blogs(db: Session = Depends(get_db)):
-    return db.query(models.Blog).order_by(models.Blog.order_index.asc()).all()
+    return [serialize_blog(item) for item in ordered_items(db, models.Blog)]
 
 @app.post("/api/blogs", response_model=schemas.BlogResponse)
 def create_blog(item: schemas.BlogCreate, db: Session = Depends(get_db), _: bool = Depends(get_current_admin)):

@@ -5,6 +5,7 @@ import Experience from "./Experience/Experience";
 import Projects from "./Project/Projects";
 import Education from "./Education/Education";
 import Achievements from "./Achievements/Achievements";
+import DeveloperProfiles from "./DeveloperProfiles/DeveloperProfiles";
 import Blogs from "./Blogs/Blogs";
 import Contact from "./Contact/Contact";
 import Footer from "./Footer/Footer";
@@ -22,6 +23,7 @@ function PortfolioLayout() {
       <Projects />
       <Education />
       <Achievements />
+      <DeveloperProfiles />
       <Blogs />
       <Contact />
       <Footer />

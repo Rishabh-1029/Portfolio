@@ -5,9 +5,11 @@ function CodingAchievements() {
     <>
       {/* Header */}
       <div className="achievements-header">
-        <h2>ACHIEVEMENTS</h2>
+        <h2>
+          <span className="gradient-text">ACHIEVEMENTS</span>
+        </h2>
         <p>
-          Recognition and achievements from my academic and technical journey.
+          Recognition and achievements from my academic and technical journey
         </p>
       </div>
       <div className="stats-grid">

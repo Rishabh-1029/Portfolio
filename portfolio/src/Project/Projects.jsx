@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { FaGithub, FaCode } from "react-icons/fa";
-import { API_BASE_URL } from "../api.js";
+import { usePublicContent } from "../content/usePublicContent.js";
 import "./Projects.css";
 
 // Original Image Assets
@@ -15,82 +13,56 @@ import BlogstoryLogo from "../assets/BlogStory.png";
 
 // Mappings for older items seamlessly transitioning
 const assetMap = {
-  "TrueDrive": { logo: TrurDrive, gradient: "navy-gradient" },
-  "EasyLearn": { logo: EasyLearn, gradient: "blue-gradient" },
-  "VIDES": { logo: VIDESLOGO, gradient: "white-gradient" },
-  "ANPR": { logo: ANPRLOGO, gradient: "from-rose-600" },
-  "BlogStory": { logo: BlogstoryLogo, gradient: "from-purple-600" },
-  "Vasitum": { logo: VasitumLogo, gradient: "royal-blue" },
+  TrueDrive: { logo: TrurDrive, gradient: "navy-gradient" },
+  EasyLearn: { logo: EasyLearn, gradient: "blue-gradient" },
+  VIDES: { logo: VIDESLOGO, gradient: "white-gradient" },
+  ANPR: { logo: ANPRLOGO, gradient: "from-rose-600" },
+  BlogStory: { logo: BlogstoryLogo, gradient: "from-purple-600" },
+  Vasitum: { logo: VasitumLogo, gradient: "royal-blue" },
   "Vasitum-Dashboard": { logo: VasitumLogo, gradient: "royal-blue" },
 };
 
-const Projects = () => {
-  const [projects, setProjects] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+const MotionDiv = motion.div;
 
-  useEffect(() => {
-    // Fetch dynamic project data from the backend
-    const fetchProjects = async () => {
-      try {
-        const res = await axios.get(`${API_BASE_URL}/api/projects`);
-        setProjects(res.data);
-      } catch (err) {
-        console.error("Failed to fetch projects:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchProjects();
-  }, []);
+const Projects = () => {
+  const { projects } = usePublicContent();
 
   return (
     <section id="projects" className="projects-section">
       <div className="projects-container">
         {/* Header */}
-        <motion.div 
+        <MotionDiv
           className="projects-header"
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2>PROJECTS</h2>
+          <h2>
+            <span className="gradient-text">PROJECTS</span>
+          </h2>
           <p className="section-subtext">
             Exploring multiple domains through projects in{" "}
-            <strong>Full-Stack, AI, Computer Vision,</strong> and{" "}
-            <strong>LLMs</strong>.
+            <strong>Full-Stack, AI, CV,</strong> and <strong>LLMs</strong>
           </p>
-        </motion.div>
+        </MotionDiv>
 
         {/* Grid */}
         <div className="projects-grid">
-          {isLoading ? (
-            Array.from({ length: 3 }).map((_, idx) => (
-              <div key={idx} className="project-card glass-card">
-                <div className="project-banner skeleton" style={{ height: '140px' }}></div>
-                <div className="project-content">
-                  <div className="skeleton skeleton-text short" style={{width: '30%', height: '12px'}}></div>
-                  <div className="skeleton skeleton-title"></div>
-                  <div className="skeleton skeleton-text"></div>
-                  <div className="skeleton skeleton-text"></div>
-                  <div className="skeleton skeleton-text short"></div>
-                  <div className="project-tech" style={{marginTop: '1.5rem', display: 'flex', gap: '0.5rem'}}>
-                    <div className="skeleton skeleton-badge" style={{height: '24px', width: '60px', borderRadius: '4px'}}></div>
-                    <div className="skeleton skeleton-badge" style={{height: '24px', width: '70px', borderRadius: '4px'}}></div>
-                    <div className="skeleton skeleton-badge" style={{height: '24px', width: '50px', borderRadius: '4px'}}></div>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : projects.length === 0 ? (
-            <p>No projects to display yet. Add some from the Admin Dashboard!</p>
+          {projects.length === 0 ? (
+            <p>
+              No projects to display yet. Add some from the Admin Dashboard!
+            </p>
           ) : (
             projects.map((project, index) => {
-              const mappedAssets = assetMap[project.title] || { logo: "", gradient: "default-gradient" };
+              const mappedAssets = assetMap[project.title] || {
+                logo: "",
+                gradient: "default-gradient",
+              };
 
               return (
-                <motion.div 
-                  key={project.id} 
+                <MotionDiv
+                  key={project.id}
                   className="project-card glass-card"
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -116,17 +88,22 @@ const Projects = () => {
 
                     {/* Tech Stack */}
                     <div className="project-tech">
-                      {project.tech && project.tech.split(",").map((tech, i) => (
-                        <span key={i}>{tech.trim()}</span>
-                      ))}
+                      {project.tech &&
+                        project.tech
+                          .split(",")
+                          .map((tech, i) => <span key={i}>{tech.trim()}</span>)}
                     </div>
 
                     {/* Links */}
                     <div className="project-links">
                       {project.github && (
-                         <a href={project.github} target="_blank" rel="noreferrer">
-                           <FaGithub /> GitHub
-                         </a>
+                        <a
+                          href={project.github}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <FaGithub /> GitHub
+                        </a>
                       )}
                       {project.live?.trim() && (
                         <a href={project.live} target="_blank" rel="noreferrer">
@@ -135,7 +112,7 @@ const Projects = () => {
                       )}
                     </div>
                   </div>
-                </motion.div>
+                </MotionDiv>
               );
             })
           )}

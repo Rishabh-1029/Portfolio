@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { API_BASE_URL } from "./api.js";
+
+const ANALYTICS_DELAY_MS = 1500;
+const ANALYTICS_TIMEOUT_MS = 3000;
 
 // Lightweight UA parser – no dependency needed
 const parseUA = (ua) => {
@@ -39,8 +41,7 @@ export const useAnalytics = () => {
     if (location.pathname.includes(adminRoute)) return;
 
     const { browser, os, device } = parseUA(navigator.userAgent);
-
-    axios.post(`${API_BASE_URL}/api/analytics`, {
+    const payload = {
       event_type: "page_view",
       path: location.pathname,
       metadata_json: JSON.stringify({
@@ -53,7 +54,28 @@ export const useAnalytics = () => {
         language: navigator.language,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       }),
-    }).catch(() => {}); // silently ignore ad-blockers / network errors
+    };
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => {
+      fetch(`${API_BASE_URL}/api/analytics`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true,
+        signal: controller.signal,
+      }).catch(() => {});
+    }, ANALYTICS_DELAY_MS);
+
+    const abortTimeout = window.setTimeout(() => {
+      controller.abort();
+    }, ANALYTICS_DELAY_MS + ANALYTICS_TIMEOUT_MS);
+
+    return () => {
+      window.clearTimeout(timeout);
+      window.clearTimeout(abortTimeout);
+      controller.abort();
+    };
   }, [location]);
 
   return null;

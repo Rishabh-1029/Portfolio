@@ -112,3 +112,9 @@ class BlogResponse(BlogBase):
 
     class Config:
         from_attributes = True
+
+class PublicContentResponse(BaseModel):
+    projects: list[ProjectResponse]
+    experiences: list[ExperienceResponse]
+    skills: list[SkillResponse]
+    blogs: list[BlogResponse]

@@ -38,7 +38,12 @@ const Education = () => {
     <section id="education" className="education-section">
       <div className="education-container">
         <div className="education-header">
-          <h2>EDUCATION</h2>
+          <h2>
+            <span className="gradient-text">EDUCATION</span>
+          </h2>
+          <p className="section-subtext">
+            Academic qualifications and educational background
+          </p>
         </div>
 
         <div className="education-grid">

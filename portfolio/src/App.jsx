@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import PortfolioLayout from "./PortfolioLayout";
 import AdminDashboard from "./Admin/AdminDashboard";
+import { PublicContentProvider } from "./content/PublicContentProvider.jsx";
 
 import { useAnalytics } from "./useAnalytics";
 
@@ -19,7 +20,14 @@ function App() {
     <Router>
       <AnalyticsTracker />
       <Routes>
-        <Route path="/" element={<PortfolioLayout />} />
+        <Route
+          path="/"
+          element={
+            <PublicContentProvider>
+              <PortfolioLayout />
+            </PublicContentProvider>
+          }
+        />
         <Route path={`/${ADMIN_ROUTE}/*`} element={<AdminDashboard />} />
       </Routes>
     </Router>
