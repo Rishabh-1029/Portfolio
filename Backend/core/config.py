@@ -3,11 +3,18 @@ import os
 
 load_dotenv()
 
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
 class Settings:
     ENV = os.getenv("ENV", "development")
 
     # Database
     DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./portfolio.db")
+    AUTO_CREATE_TABLES = env_bool("AUTO_CREATE_TABLES", ENV != "production")
 
     # JWT — no fallback; must be set in .env
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")

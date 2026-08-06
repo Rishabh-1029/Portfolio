@@ -1,6 +1,6 @@
 import React from "react";
 import "./Achievements.css";
-import { FaAward, FaMedal, FaGraduationCap } from "react-icons/fa";
+import { FaAward, FaExternalLinkAlt, FaGraduationCap, FaMedal } from "react-icons/fa";
 import { RiCodeSSlashFill } from "react-icons/ri";
 
 const achievementsData = [
@@ -10,7 +10,9 @@ const achievementsData = [
     title: "Dean’s List Award",
     description:
       "Recognized for outstanding academic performance at Bennett University.",
+    accent: "#38bdf8",
     link: "https://drive.google.com/file/d/1xGZHoHcjoNY2TYSoA4w3wLLDp1-8Q-dS/view",
+    linkLabel: "View Certificate",
   },
   {
     id: 2,
@@ -18,14 +20,16 @@ const achievementsData = [
     title: "Scholarship",
     description:
       "Awarded the Academic Excellence Scholarship at Bennett University.",
-    // optional link if you have a certificate
+    accent: "#a78bfa",
   },
   {
     id: 3,
     icon: "hack",
     title: "Hackathon",
     description: "Led development of KindBasket MVP at Hackaccino 3.0 (2025).",
+    accent: "#22c55e",
     link: "https://github.com/Rishabh-1029/KindBasket",
+    linkLabel: "View Project",
   },
 ];
 
@@ -42,28 +46,54 @@ const Achievements = () => {
       <div className="achievements-container">
         {/* Header */}
         <div className="achievements-header">
-          <h2>ACHIEVEMENTS</h2>
+          <h2>
+            <span className="gradient-text">ACHIEVEMENTS</span>
+          </h2>
           <p>
-            Recognition and achievements from my academic and technical journey.
+            Recognition and achievements from my academic and technical journey
           </p>
         </div>
 
         {/* Cards */}
         <div className="achievements-grid">
-          {achievementsData.map((achieve) => (
-            <div
-              key={achieve.id}
-              className="achievement-card"
-              onClick={() =>
-                achieve.link && window.open(achieve.link, "_blank")
-              }
-              style={{ cursor: achieve.link ? "pointer" : "default" }}
-            >
-              <div className="achievement-icon">{iconMap[achieve.icon]}</div>
-              <h3>{achieve.title}</h3>
-              <p>{achieve.description}</p>
-            </div>
-          ))}
+          {achievementsData.map((achieve) => {
+            const cardContent = (
+              <>
+                <div className="achievement-icon">{iconMap[achieve.icon]}</div>
+                <div className="achievement-content">
+                  <h3>{achieve.title}</h3>
+                  <p>{achieve.description}</p>
+                </div>
+                {achieve.link && (
+                  <span className="achievement-link">
+                    {achieve.linkLabel}
+                    <FaExternalLinkAlt />
+                  </span>
+                )}
+              </>
+            );
+
+            return achieve.link ? (
+              <a
+                key={achieve.id}
+                className="achievement-card"
+                href={achieve.link}
+                target="_blank"
+                rel="noreferrer"
+                style={{ "--achievement-accent": achieve.accent }}
+              >
+                {cardContent}
+              </a>
+            ) : (
+              <article
+                key={achieve.id}
+                className="achievement-card"
+                style={{ "--achievement-accent": achieve.accent }}
+              >
+                {cardContent}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

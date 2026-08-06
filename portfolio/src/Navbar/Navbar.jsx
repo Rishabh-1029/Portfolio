@@ -14,7 +14,6 @@ import {
   FaCode,
   FaPen,
 } from "react-icons/fa";
-import { SiLeetcode } from "react-icons/si";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -53,12 +52,6 @@ const Navbar = () => {
             </a>
           </li>
           <li>
-            <a href="#blogs" onClick={handleLinkClick}>
-              <FaPen />
-              Blogs
-            </a>
-          </li>
-          <li>
             <a href="#education" onClick={handleLinkClick}>
               <FaGraduationCap />
               Education
@@ -71,29 +64,21 @@ const Navbar = () => {
             </a>
           </li>
           <li>
+            <a href="#developer-profiles" onClick={handleLinkClick}>
+              <FaGithub />
+              Profiles
+            </a>
+          </li>
+          <li>
+            <a href="#blogs" onClick={handleLinkClick}>
+              <FaPen />
+              Blogs
+            </a>
+          </li>
+          <li>
             <a href="#contact" onClick={handleLinkClick}>
               <AiOutlineMail />
               Connect
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://github.com/Rishabh-1029"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <FaGithub />
-              GitHub
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://leetcode.com/rspsurana"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <SiLeetcode />
-              LeetCode
             </a>
           </li>
         </ul>

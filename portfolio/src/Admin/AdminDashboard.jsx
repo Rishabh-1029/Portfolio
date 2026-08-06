@@ -488,7 +488,9 @@ const VisitorsView = ({ items }) => {
       let meta = {};
       try {
         meta = JSON.parse(ev.metadata_json || "{}");
-      } catch {}
+      } catch {
+        meta = {};
+      }
       const ip = meta.ip || "unknown";
       if (!byIP[ip]) byIP[ip] = { ip, events: [], meta };
       byIP[ip].events.unshift(ev); // newest first
@@ -554,7 +556,9 @@ const AnalyticsDashboard = ({ items, loading }) => {
       try {
         const m = JSON.parse(e.metadata_json || "{}");
         if (m.ip) uniqueIPs.add(m.ip);
-      } catch {}
+      } catch {
+        // Ignore malformed analytics metadata.
+      }
     });
 
     // Unique paths
@@ -888,7 +892,9 @@ const AnalyticsDashboard = ({ items, loading }) => {
                 let meta = {};
                 try {
                   meta = JSON.parse(ev.metadata_json || "{}");
-                } catch {}
+                } catch {
+                  meta = {};
+                }
                 return (
                   <div
                     key={ev.id ?? i}
@@ -1024,7 +1030,7 @@ const AdminDashboard = () => {
       const newToken = res.data.access_token;
       setToken(newToken);
       localStorage.setItem("admin_token", newToken);
-    } catch (err) {
+    } catch {
       alert("Login failed. Incorrect password.");
     }
   };

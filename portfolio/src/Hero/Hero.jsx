@@ -2,12 +2,14 @@ import "./Hero.css";
 import profileImg from "../assets/profile.jpg"; // add your image here
 import { motion } from "framer-motion";
 
+const MotionDiv = motion.div;
+
 const Hero = () => {
   return (
     <section id="home" className="hero">
       <div className="hero-container">
         {/* Text CONTENT */}
-        <motion.div 
+        <MotionDiv
           className="hero-text"
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -40,10 +42,10 @@ const Hero = () => {
               Download Resume
             </a>
           </div>
-        </motion.div>
+        </MotionDiv>
 
         {/* Profile IMAGE */}
-        <motion.div 
+        <MotionDiv
           className="hero-image"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -51,7 +53,7 @@ const Hero = () => {
         >
           <div className="profile-glow"></div>
           <img src={profileImg} alt="Rishabh Surana" />
-        </motion.div>
+        </MotionDiv>
       </div>
     </section>
   );
