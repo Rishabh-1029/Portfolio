@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 # ---- PROJECT -----
@@ -68,8 +68,21 @@ class MessageBase(BaseModel):
     phone: Optional[str] = None
     message: str
 
+class VisitorLocation(BaseModel):
+    latitude: float = Field(ge=-90, le=90)
+    longitude: float = Field(ge=-180, le=180)
+    accuracy_meters: Optional[float] = Field(default=None, ge=0)
+    city: Optional[str] = Field(default=None, max_length=120)
+    region: Optional[str] = Field(default=None, max_length=120)
+    country: Optional[str] = Field(default=None, max_length=120)
+
+class VisitorContext(BaseModel):
+    timezone: Optional[str] = Field(default=None, max_length=100)
+    locale: Optional[str] = Field(default=None, max_length=50)
+    location: Optional[VisitorLocation] = None
+
 class MessageCreate(MessageBase):
-    pass
+    visitor_context: Optional[VisitorContext] = None
 
 class MessageResponse(MessageBase):
     id: int

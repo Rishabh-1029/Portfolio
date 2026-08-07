@@ -9,6 +9,7 @@ venv/
 # Environment & Secrets — NEVER COMMIT THESE
 .env
 .env.*
+!.env.example
 
 # Database
 *.db

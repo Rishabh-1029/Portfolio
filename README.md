@@ -1,40 +1,44 @@
 # Portfolio & CMS Platform
 
-> **Beyond a static template.** This is a fully dynamic, database-driven Content Management System wrapped in a Glassmorphism UI. Designed for high performance, secure, and seamless content management without ever needing to touch the source code after deployment.
+A full-stack personal portfolio with a React public site, a FastAPI content API, and a protected admin dashboard. Content, projects, blogs, experience, and contact messages are managed through the backend rather than hard-coded into the deployed site.
+
+**Live site:** [rishabh-surana.netlify.app](https://rishabh-surana.netlify.app/)
 
 ---
 
-##  The Vision
-Most engineer portfolios are static site generators requiring highly technical Git workflows just to add a new project or blog post. 
+## Highlights
 
-This platform flips that script. It is built as a **Headless CMS architecture**. The React frontend acts entirely as an API consumer, while a hidden, highly secure, full-stack Admin Dashboard manages all the content inside a production PostgreSQL cloud database. 
-
-### Why this approach?
-*   **Zero-Friction Updates:** Add new skills, publish dev blogs, or list your newest employment instantly via the Admin Dashboard's rich text inputs. 
-*   **Instant Propagation:** Changes hit the database and instantly reflect on the public site globally.
-*   **Built-in Analytics:** Tracks page views and user engagement automatically in the background.
-*   **Integrated CRM:** The contact section doesn't rely on third-party mailers; it safely stores messages right into the backend's secure `Messages` inbox.
+- Glassmorphism portfolio UI with responsive project, achievement, and education sections.
+- Database-backed content and a protected admin dashboard for managing portfolio data.
+- Contact messages are saved to the backend inbox first, then optionally sent as SMTP email alerts without delaying the visitor's success state.
+- Responsive contact notification emails with a clear subject, reply-to support, and received time shown in IST.
+- Consent-based visitor location context: the form resolves the visitor's city and includes it in the email only when browser location permission is granted.
+- Analytics, rate limiting, JWT admin authentication, and password hashing.
 
 ---
 
-##  Features & Engineering Highlights
+## Tech Stack
 
-###  1.  "Glassmorphism" UI System
-*   **Dynamic Shimmer Skeletons:** Implements animated loading block skeletons across the network layer for zero layout shift during async fetches.
-*   **Framer Motion:** Micro-interactions, staggered grid layouts, and smooth modal transitions.
-*   **React Icons & SVGs:** Highly adaptive icon engines that natively translate database string outputs into beautifully rendered SVGs.
-
-### 2. Enterprise-Grade Security
-*   **Stealth Admin Route:** The dashboard is completely invisible to crawlers and script-kiddies, hidden behind an encrypted `.env` slug.
-*   **Strict JWT Authentication:** A rigid 8-hour TTL authentication flow.
-*   **Encrypted Passwords:** Passwords strictly bypass plain text via Bcrypt salts.
-*   **Robust Rate-Limiting:** `slowapi` algorithm explicitly throttles rapid API blasts against endpoints like the `/login` token exchange or `/analytics` spammers.
-
-### 3. The Tech Stack
-*   **Frontend:** React, Framer Motion, Axios
-*   **Backend:** FastAPI (Python), SQLAlchemy (ORM), Uvicorn, Python-jose (JWT)
-*   **Database:** Cloud PostgreSQL (Neon).
+| Area     | Tools                                                           |
+| -------- | --------------------------------------------------------------- |
+| Frontend | React 19, Vite, React Router, Framer Motion, Axios, React Icons |
+| Backend  | FastAPI, SQLAlchemy, Uvicorn, Pydantic                          |
+| Data     | SQLite for local development, PostgreSQL for production         |
 
 ---
 
-``` Creating, Learning, and Evolving ```
+## Contact Email Notifications
+
+Each contact submission is persisted in the backend inbox. SMTP alerts are optional and run in a background thread, so email delivery does not hold up the form response.
+
+---
+
+## Visitor Location Context
+
+The contact form requests browser geolocation automatically. When permission is granted, it resolves the city, region, and country through the backend's reverse-geocoding endpoint and displays the detected city in the form. The email alert includes the location context and a map link; it is not stored with the contact message in the database.
+
+When permission is denied or unavailable, no location context is submitted.
+
+---
+
+`Creating, Learning, and Evolving`

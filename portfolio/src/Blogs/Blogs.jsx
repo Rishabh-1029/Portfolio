@@ -40,7 +40,9 @@ const Blogs = () => {
 
   const getBlogPreview = (content) => {
     const preview = getPlainText(content);
-    return preview.length > 150 ? `${preview.slice(0, 150).trim()}...` : preview;
+    return preview.length > 150
+      ? `${preview.slice(0, 150).trim()}...`
+      : preview;
   };
 
   const getReadingTime = (content) => {
@@ -253,20 +255,6 @@ const Blogs = () => {
                   <div className="markdown-wrapper">
                     <ReactMarkdown>{activeBlog.content_md}</ReactMarkdown>
                   </div>
-
-                  {activeBlog.external_url && (
-                    <div style={{ marginTop: "3rem", textAlign: "center" }}>
-                      <a
-                        href={activeBlog.external_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn primary glass-button"
-                        style={{ display: "inline-block" }}
-                      >
-                        Read Original on Medium
-                      </a>
-                    </div>
-                  )}
                 </div>
               </div>
             </MotionDiv>

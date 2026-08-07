@@ -6,7 +6,7 @@ Link: https://rishabh-surana.netlify.app/
 
 ## Tech Stack
 
-ReactJS, HTML, CSS, JavaScript, EmailJS
+ReactJS, HTML, CSS, JavaScript, FastAPI-backed contact inbox with SMTP notifications
 
 ---
 

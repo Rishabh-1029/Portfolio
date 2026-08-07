@@ -8,13 +8,19 @@ const Footer = () => {
   return (
     <footer className="footer">
       <p>
-        <span className="footer-quote gradient-text">Creating, Learning, and Evolving</span>
-        <span className="footer-divider">|</span>© 2025{" "}
+        <span className="footer-quote gradient-text">
+          Creating, Learning, and Evolving
+        </span>
+        <span className="footer-divider">|</span>© 2025–2026{" "}
         <strong>Rishabh Surana</strong>. All rights reserved.
       </p>
-      
+
       {/* Subtle Admin Gateway */}
-      <Link to={`/${adminRoute}`} className="admin-gateway" title="System Login">
+      <Link
+        to={`/${adminRoute}`}
+        className="admin-gateway"
+        title="System Login"
+      >
         ⎈
       </Link>
     </footer>

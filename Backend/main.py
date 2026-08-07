@@ -2,18 +2,38 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import bcrypt
+from collections import OrderedDict
+from html import escape
 import jwt
 import json
-from datetime import datetime, timedelta
+import logging
+import smtplib
+import ssl
+import threading
+import time
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode
+from urllib.request import Request as UrlRequest, urlopen
+from datetime import datetime, timedelta, timezone
+from email.message import EmailMessage
+from email.utils import formataddr, formatdate
+from zoneinfo import ZoneInfo
 
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from fastapi import Request
+from fastapi import Query, Request
 
 from core.database import engine, SessionLocal, Base
 from core.config import settings
 from core import models, schemas
+
+logger = logging.getLogger(__name__)
+IST_TIMEZONE = ZoneInfo("Asia/Kolkata")
+LOCATION_CACHE = OrderedDict()
+LOCATION_CACHE_LOCK = threading.Lock()
+LOCATION_LAST_REQUEST_AT = 0.0
+LOCATION_CACHE_LIMIT = 200
 
 # Create all tables
 if settings.AUTO_CREATE_TABLES:
@@ -86,6 +106,282 @@ def serialize_blog(item: models.Blog):
         "external_url": item.external_url,
         "published_date": item.published_date or "",
     }
+
+def smtp_notifications_enabled():
+    return bool(
+        settings.SMTP_HOST
+        and settings.SMTP_FROM_EMAIL
+        and settings.CONTACT_NOTIFICATION_EMAIL
+    )
+
+def clean_email_header(value):
+    return " ".join(str(value or "").splitlines()).strip()
+
+def as_html(value):
+    return escape(str(value or "")).replace("\n", "<br>")
+
+def format_ist_datetime(value):
+    try:
+        received_at = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        if received_at.tzinfo is None:
+            received_at = received_at.replace(tzinfo=timezone.utc)
+        return received_at.astimezone(IST_TIMEZONE).strftime("%d %b %Y, %I:%M %p IST")
+    except (TypeError, ValueError):
+        logger.warning("Could not format contact timestamp as IST: %s", value)
+        return "Not available"
+
+def get_visitor_context(payload):
+    visitor_context = payload.get("visitor_context") or {}
+    location = visitor_context.get("location") or {}
+    timezone_name = clean_email_header(visitor_context.get("timezone"))
+    locale = clean_email_header(visitor_context.get("locale"))
+
+    try:
+        latitude = float(location["latitude"])
+        longitude = float(location["longitude"])
+    except (KeyError, TypeError, ValueError):
+        latitude = longitude = None
+
+    location_label = ""
+    location_url = ""
+    if latitude is not None and longitude is not None:
+        place_parts = []
+        for value in (location.get("city"), location.get("region"), location.get("country")):
+            cleaned_value = clean_email_header(value)
+            if cleaned_value and cleaned_value not in place_parts:
+                place_parts.append(cleaned_value)
+
+        location_label = ", ".join(place_parts) or f"{latitude:.5f}, {longitude:.5f}"
+        accuracy = location.get("accuracy_meters")
+        if accuracy is not None:
+            location_label += f" (accuracy: +/- {round(float(accuracy))} m)"
+        location_url = f"https://www.google.com/maps?q={latitude:.6f},{longitude:.6f}"
+
+    return timezone_name, locale, location_label, location_url
+
+def reverse_geocode_location(latitude: float, longitude: float):
+    global LOCATION_LAST_REQUEST_AT
+
+    cache_key = (round(latitude, 3), round(longitude, 3))
+    with LOCATION_CACHE_LOCK:
+        cached_location = LOCATION_CACHE.get(cache_key)
+        if cached_location:
+            LOCATION_CACHE.move_to_end(cache_key)
+            return cached_location
+
+        delay = 1 - (time.monotonic() - LOCATION_LAST_REQUEST_AT)
+        if delay > 0:
+            time.sleep(delay)
+        LOCATION_LAST_REQUEST_AT = time.monotonic()
+
+        query = urlencode(
+            {
+                "format": "jsonv2",
+                "lat": f"{latitude:.6f}",
+                "lon": f"{longitude:.6f}",
+                "zoom": 10,
+                "addressdetails": 1,
+            }
+        )
+        request = UrlRequest(
+            f"https://nominatim.openstreetmap.org/reverse?{query}",
+            headers={
+                "Accept": "application/json",
+                "User-Agent": settings.LOCATION_LOOKUP_USER_AGENT,
+            },
+        )
+
+        try:
+            with urlopen(request, timeout=settings.LOCATION_LOOKUP_TIMEOUT_SECONDS) as response:
+                result = json.load(response)
+        except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as error:
+            logger.warning("Location lookup failed: %s", error)
+            raise HTTPException(status_code=503, detail="Location lookup is temporarily unavailable")
+
+        address = result.get("address") or {}
+        location = {
+            "city": address.get("city") or address.get("town") or address.get("village") or address.get("municipality") or address.get("county"),
+            "region": address.get("state") or address.get("state_district"),
+            "country": address.get("country"),
+        }
+        LOCATION_CACHE[cache_key] = location
+        if len(LOCATION_CACHE) > LOCATION_CACHE_LIMIT:
+            LOCATION_CACHE.popitem(last=False)
+        return location
+
+def email_detail_row(label, value, link=""):
+    displayed_value = as_html(value)
+    if link:
+        displayed_value = f'<a href="{as_html(link)}" style="color:#007c91;text-decoration:none;">{displayed_value}</a>'
+    return f"""\
+                  <tr>
+                    <td class="contact-label" style="padding:0 20px 16px 0;width:128px;font-size:12px;font-weight:700;letter-spacing:0.9px;color:#52616b;vertical-align:top;">{as_html(label)}</td>
+                    <td class="contact-value" style="padding:0 0 16px;font-size:15px;line-height:1.45;color:#17212b;">{displayed_value}</td>
+                  </tr>"""
+
+def send_contact_notification(message_id: int, payload: dict, created_at: str):
+    if not smtp_notifications_enabled():
+        return
+
+    try:
+        name = clean_email_header(payload.get("name")) or "Unknown visitor"
+        sender_email = clean_email_header(payload.get("email"))
+        phone = clean_email_header(payload.get("phone")) or "Not provided"
+        message_body = str(payload.get("message") or "").strip()
+        received_at = format_ist_datetime(created_at)
+        visitor_timezone, visitor_locale, visitor_location, visitor_location_url = get_visitor_context(payload)
+
+        visitor_context_text = []
+        visitor_context_html = ""
+        if visitor_timezone or visitor_locale or visitor_location:
+            if visitor_timezone:
+                visitor_context_text.append(f"Visitor timezone: {visitor_timezone}")
+            if visitor_locale:
+                visitor_context_text.append(f"Browser locale: {visitor_locale}")
+            if visitor_location:
+                visitor_context_text.append(f"Detected location: {visitor_location}")
+
+            visitor_rows = ""
+            if visitor_timezone:
+                visitor_rows += email_detail_row("TIMEZONE", visitor_timezone)
+            if visitor_locale:
+                visitor_rows += email_detail_row("BROWSER LOCALE", visitor_locale)
+            if visitor_location:
+                visitor_rows += email_detail_row("DETECTED LOCATION", visitor_location, visitor_location_url)
+
+            visitor_context_html = f"""\
+                <div style="height:1px;margin:28px 0;background:#dbe3e8;"></div>
+                <p style="margin:0 0 16px;font-size:12px;font-weight:700;letter-spacing:1px;color:#52616b;">VISITOR CONTEXT</p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;">
+{visitor_rows}
+                </table>"""
+
+        email = EmailMessage()
+        email["Subject"] = f"Portfolio enquiry from {name}"
+        email["From"] = formataddr((settings.SMTP_FROM_NAME, settings.SMTP_FROM_EMAIL))
+        email["To"] = clean_email_header(settings.CONTACT_NOTIFICATION_EMAIL)
+        email["Date"] = formatdate(localtime=True)
+        if sender_email:
+            email["Reply-To"] = sender_email
+
+        email.set_content(
+            "\n".join(
+                [
+                    "NEW PORTFOLIO ENQUIRY",
+                    "",
+                    f"Name: {name}",
+                    f"Email: {sender_email or 'Not provided'}",
+                    f"Phone: {phone}",
+                    f"Received: {received_at}",
+                    f"Reference: #{message_id}",
+                    *(["", *visitor_context_text] if visitor_context_text else []),
+                    "",
+                    "Message:",
+                    message_body,
+                ]
+            )
+        )
+        email.add_alternative(
+            f"""\
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      @media screen and (max-width: 600px) {{
+        .email-shell {{ padding: 12px !important; }}
+        .email-card {{ width: 100% !important; }}
+        .email-header, .email-body {{ padding: 24px 20px !important; }}
+        .email-heading {{ font-size: 22px !important; }}
+        .contact-label, .contact-value {{ display: block !important; width: 100% !important; }}
+        .contact-label {{ padding: 0 0 5px !important; }}
+        .contact-value {{ padding: 0 0 16px !important; }}
+        .message-box {{ padding: 16px !important; }}
+      }}
+    </style>
+  </head>
+  <body style="margin:0;padding:0;background:#f3f6f8;color:#17212b;font-family:Arial,sans-serif;">
+    <table class="email-shell" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;padding:24px;background:#f3f6f8;">
+      <tr>
+        <td align="center">
+          <table class="email-card" role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:640px;background:#ffffff;border:1px solid #dbe3e8;">
+            <tr>
+              <td class="email-header" style="padding:28px 32px;background:#102a43;color:#ffffff;">
+                <p style="margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#80deea;">Portfolio contact form</p>
+                <h1 class="email-heading" style="margin:0;font-size:26px;line-height:1.2;font-weight:700;">New enquiry from {as_html(name)}</h1>
+              </td>
+            </tr>
+            <tr>
+              <td class="email-body" style="padding:32px;">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-collapse:collapse;">
+{email_detail_row("NAME", name)}
+{email_detail_row("EMAIL", sender_email or "Not provided", f"mailto:{sender_email}" if sender_email else "")}
+{email_detail_row("PHONE", phone)}
+{email_detail_row("RECEIVED", f"{received_at} | Reference #{message_id}")}
+                </table>
+{visitor_context_html}
+                <div style="height:1px;margin:28px 0;background:#dbe3e8;"></div>
+                <p style="margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:1px;color:#52616b;">MESSAGE</p>
+                <div class="message-box" style="padding:20px;background:#f3f6f8;border-left:3px solid #00a8b5;font-size:16px;line-height:1.65;color:#17212b;">{as_html(message_body)}</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+""",
+            subtype="html",
+        )
+
+        context = ssl.create_default_context()
+
+        if settings.SMTP_USE_SSL:
+            with smtplib.SMTP_SSL(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=settings.SMTP_TIMEOUT_SECONDS,
+                context=context,
+            ) as server:
+                if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
+                    server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+                server.send_message(email)
+        else:
+            with smtplib.SMTP(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=settings.SMTP_TIMEOUT_SECONDS,
+            ) as server:
+                if settings.SMTP_USE_TLS:
+                    server.starttls(context=context)
+                if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
+                    server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+                server.send_message(email)
+    except Exception:
+        logger.exception("SMTP notification failed for contact message %s", message_id)
+
+@app.get("/api/location/reverse")
+@limiter.limit("10/minute")
+def get_location_name(
+    request: Request,
+    latitude: float = Query(..., ge=-90, le=90),
+    longitude: float = Query(..., ge=-180, le=180),
+):
+    if not settings.LOCATION_LOOKUP_ENABLED:
+        raise HTTPException(status_code=503, detail="Location lookup is disabled")
+    return reverse_geocode_location(latitude, longitude)
+
+def queue_contact_notification(message_id: int, payload: dict, created_at: str):
+    if not smtp_notifications_enabled():
+        return
+
+    thread = threading.Thread(
+        target=send_contact_notification,
+        args=(message_id, payload, created_at),
+        daemon=True,
+    )
+    thread.start()
 
 # Auth Dependency
 def verify_token(token: str = Depends(lambda: "")): # Simplified for header parsing below
@@ -259,11 +555,25 @@ def get_messages(db: Session = Depends(get_db), _: bool = Depends(get_current_ad
 
 @app.post("/api/messages", response_model=schemas.MessageResponse)
 @limiter.limit("3/minute")
-def create_message(item: schemas.MessageCreate, request: Request, db: Session = Depends(get_db)):
-    db_item = models.Message(**item.model_dump(), created_at=datetime.utcnow().isoformat())
+def create_message(
+    item: schemas.MessageCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    created_at = datetime.utcnow().isoformat()
+    notification_payload = item.model_dump()
+    db_item = models.Message(
+        **item.model_dump(exclude={"visitor_context"}),
+        created_at=created_at,
+    )
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
+    queue_contact_notification(
+        db_item.id,
+        notification_payload,
+        db_item.created_at,
+    )
     return db_item
 
 @app.delete("/api/messages/{item_id}")
