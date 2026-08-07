@@ -42,36 +42,53 @@ export const fallbackSkills = [
 
 export const fallbackExperiences = [
   {
-    id: "fallback-vasitum",
+    id: 3,
     order_index: 0,
-    role: "Frontend Development Intern",
-    company: "Vasitum Tech (Maven Workforce)",
-    period: "June 2024",
-    description: JSON.stringify([
-      "Built a React dashboard from a Figma design during on-site internship training.",
-      "Implemented responsive UI sections with reusable components and REST API integration patterns.",
-    ]),
-  },
-  {
-    id: "fallback-comvision",
-    order_index: 1,
-    role: "Software Development Intern",
-    company: "Comvision India Ltd.",
-    period: "Professional training",
-    description: JSON.stringify([
-      "Worked across practical software engineering workflows with a focus on structured implementation and debugging.",
-      "Strengthened backend, frontend, and deployment fundamentals through applied engineering tasks.",
-    ]),
-  },
-  {
-    id: "fallback-nervesparks",
-    order_index: 2,
-    role: "AI/ML Intern",
+    role: "Associate Software Engineer",
     company: "Nervesparks India Private Limited",
-    period: "AI/ML experience",
+    period: "February 2026 - Present",
     description: JSON.stringify([
-      "Worked on AI/ML workflows spanning data preparation, model experimentation, and application integration.",
-      "Built practical prototypes around computer vision and intelligent automation use cases.",
+      "Architecting scalable backend systems and integrating AI into production infrastructure",
+      "Building and designing a scalable AutoML system capable of performing complex machine learning and standard statistical analysis",
+      "Designed and developed a scalable PII redaction and restoration engine capable of processing both text- and image-based formats",
+      "Designed and developed a scalable conversational data processing engine supporting emails, tickets, and messages",
+      "Focusing on high-throughput data processing and secure integrations",
+      "Understanding and applying rigorous engineering standards by enforcing comprehensive documentation",
+      "Bridging the gap between raw AI capabilities and user-facing product ecosystems",
+    ]),
+  },
+  {
+    id: 1,
+    order_index: 1,
+    role: "AI INTERN",
+    company: "Comvision India Ltd.",
+    period: "June 2025 \u2013 August 2025",
+    description: JSON.stringify([
+      "Contributed to real-time traffic & toll plaza monitoring systems",
+      "Developed computer vision models achieving 82%+ mAP with an average IoU > 0.60 for vehicle detection and ATMS applications",
+      "Developed Python backend modules for LiDAR-based image generation to enable vehicle type detection",
+      "Created FastAPI services for scalable production-ready integration",
+    ]),
+  },
+  {
+    id: 2,
+    order_index: 2,
+    role: "WEB DEVELOPMENT INTERN",
+    company: "Vasitum Tech (Maven Workforce)",
+    period: "June 2024 \u2013 July 2024",
+    description: JSON.stringify([
+      { text: "Developed 10+ live and 3+ upcoming modules with ReactJS" },
+      {
+        text: "Optimized UI components & integrated REST APIs across multiple features",
+      },
+      {
+        text: "Debugged and improved application stability, reducing deployment issues",
+      },
+      {
+        text: "Delivered a production-ready savings management feature to demonstrate the cost-benefit value proposition of the Vasitum platform",
+        link: "https://vasitum.com/savings",
+        linkText: "vasitum.com/savings",
+      },
     ]),
   },
 ];
