@@ -10,6 +10,7 @@ A full-stack personal portfolio with a React public site, a FastAPI content API,
 
 - Glassmorphism portfolio UI with responsive project, achievement, and education sections.
 - Database-backed content and a protected admin dashboard for managing portfolio data.
+- Blog Markdown reader supports Mermaid diagrams with in-modal zoom controls.
 - Contact messages are saved to the backend inbox first, then optionally sent as SMTP email alerts without delaying the visitor's success state.
 - Responsive contact notification emails with a clear subject, reply-to support, and received time shown in IST.
 - Consent-based visitor location context: the form resolves the visitor's city and includes it in the email only when browser location permission is granted.
@@ -19,11 +20,29 @@ A full-stack personal portfolio with a React public site, a FastAPI content API,
 
 ## Tech Stack
 
-| Area     | Tools                                                           |
-| -------- | --------------------------------------------------------------- |
-| Frontend | React 19, Vite, React Router, Framer Motion, Axios, React Icons |
-| Backend  | FastAPI, SQLAlchemy, Uvicorn, Pydantic                          |
-| Data     | SQLite for local development, PostgreSQL for production         |
+| Area     | Tools                                                                                    |
+| -------- | ---------------------------------------------------------------------------------------- |
+| Frontend | React 19, Vite, React Router, Framer Motion, Axios, React Icons, React Markdown, Mermaid |
+| Backend  | FastAPI, SQLAlchemy, Uvicorn, Pydantic                                                   |
+| Data     | SQLite for local development, PostgreSQL for production                                  |
+
+---
+
+## Blog Markdown & Mermaid
+
+Blog content is authored as Markdown through the CMS and rendered in the public blog modal. Standard Markdown code blocks continue to render as code, while fenced `mermaid` blocks are rendered as diagrams.
+
+Example:
+
+````md
+```mermaid
+graph TD
+  A[Draft Blog] --> B[Preview]
+  B --> C[Publish]
+```
+````
+
+Rendered Mermaid diagrams include zoom out, reset, and zoom in controls inside the diagram box, with scroll support for larger diagrams.
 
 ---
 
