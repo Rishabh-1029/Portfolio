@@ -364,6 +364,107 @@
   font-family: monospace;
 }
 
+.markdown-wrapper .mermaid-diagram {
+  margin: 2rem 0;
+  background: rgba(3, 3, 5, 0.64);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.markdown-wrapper .mermaid-diagram-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  padding: 0.55rem 0.65rem;
+  background: rgba(255, 255, 255, 0.035);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.markdown-wrapper .mermaid-diagram-toolbar button {
+  width: 2rem;
+  height: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--glass-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.markdown-wrapper .mermaid-diagram-toolbar button:hover:not(:disabled),
+.markdown-wrapper .mermaid-diagram-toolbar button:focus-visible {
+  color: var(--text-primary);
+  background: rgba(0, 240, 255, 0.1);
+  border-color: rgba(0, 240, 255, 0.45);
+}
+
+.markdown-wrapper .mermaid-diagram-toolbar button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.markdown-wrapper .mermaid-diagram-zoom {
+  width: 3.25rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.markdown-wrapper .mermaid-diagram-viewport {
+  padding: 1rem;
+  overflow: auto;
+}
+
+.markdown-wrapper .mermaid-diagram-stage {
+  min-width: 50%;
+  margin: 0 auto;
+  transition: width 0.2s ease;
+}
+
+.markdown-wrapper .mermaid-diagram-stage svg {
+  display: block;
+  width: 100%;
+  max-width: none !important;
+  height: auto;
+  margin: 0 auto;
+}
+
+.markdown-wrapper .mermaid-diagram-loading {
+  min-height: 180px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite linear;
+}
+
+.markdown-wrapper .mermaid-diagram-error {
+  border-color: rgba(248, 113, 113, 0.45);
+  padding: 1rem;
+}
+
+.markdown-wrapper .mermaid-diagram-error p {
+  color: #fecaca;
+  margin: 0 0 0.75rem;
+}
+
+.markdown-wrapper .mermaid-diagram-error pre {
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .modal-body {
     padding: 2rem 1.5rem;

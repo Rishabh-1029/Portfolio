@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import bcrypt
 from collections import OrderedDict
+from contextlib import contextmanager
 from html import escape
 import jwt
 import json
@@ -53,6 +54,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
+def service_health():
+    return {"status": "ok"}
 
 # Dependency
 def get_db():
@@ -113,6 +118,92 @@ def smtp_notifications_enabled():
         and settings.SMTP_FROM_EMAIL
         and settings.CONTACT_NOTIFICATION_EMAIL
     )
+
+def masked_email(value):
+    email_value = clean_email_header(value)
+    if not email_value:
+        return ""
+    if "@" not in email_value:
+        return "***"
+
+    local_part, domain = email_value.rsplit("@", 1)
+    if len(local_part) <= 2:
+        visible_local = local_part[0] if local_part else "*"
+    else:
+        visible_local = f"{local_part[0]}***{local_part[-1]}"
+    return f"{visible_local}@{domain}"
+
+def smtp_config_status():
+    warnings = []
+    smtp_host = (settings.SMTP_HOST or "").lower()
+    if settings.SMTP_USE_TLS and settings.SMTP_USE_SSL:
+        warnings.append("SMTP_USE_TLS and SMTP_USE_SSL should not both be true.")
+    if settings.SMTP_USE_SSL and settings.SMTP_PORT != 465:
+        warnings.append("SMTP_USE_SSL is usually used with port 465.")
+    if settings.SMTP_USE_TLS and settings.SMTP_PORT == 465:
+        warnings.append("Port 465 usually needs SMTP_USE_SSL=true and SMTP_USE_TLS=false.")
+    if smtp_host == "smtp.gmail.com" and not settings.SMTP_PASSWORD:
+        warnings.append("Gmail SMTP requires an app password when 2-step verification is enabled.")
+    if smtp_host == "smtp.gmail.com" and settings.SMTP_PASSWORD and " " in settings.SMTP_PASSWORD:
+        warnings.append("Gmail app passwords should usually be entered without spaces.")
+    if settings.SMTP_USERNAME and settings.SMTP_FROM_EMAIL and settings.SMTP_USERNAME != settings.SMTP_FROM_EMAIL:
+        warnings.append("Some providers require SMTP_FROM_EMAIL to match SMTP_USERNAME or a verified sender alias.")
+
+    return {
+        "enabled": smtp_notifications_enabled(),
+        "host": settings.SMTP_HOST or "",
+        "port": settings.SMTP_PORT,
+        "username_set": bool(settings.SMTP_USERNAME),
+        "username": masked_email(settings.SMTP_USERNAME),
+        "password_set": bool(settings.SMTP_PASSWORD),
+        "from_email": masked_email(settings.SMTP_FROM_EMAIL),
+        "from_name": settings.SMTP_FROM_NAME,
+        "notification_email": masked_email(settings.CONTACT_NOTIFICATION_EMAIL),
+        "use_tls": settings.SMTP_USE_TLS,
+        "use_ssl": settings.SMTP_USE_SSL,
+        "timeout_seconds": settings.SMTP_TIMEOUT_SECONDS,
+        "warnings": warnings,
+    }
+
+def smtp_error_detail(error):
+    smtp_error = getattr(error, "smtp_error", None)
+    if isinstance(smtp_error, bytes):
+        smtp_error = smtp_error.decode("utf-8", errors="replace")
+
+    return {
+        "type": type(error).__name__,
+        "smtp_code": getattr(error, "smtp_code", None),
+        "message": str(smtp_error or error),
+    }
+
+@contextmanager
+def smtp_client():
+    context = ssl.create_default_context()
+
+    if settings.SMTP_USE_SSL:
+        with smtplib.SMTP_SSL(
+            settings.SMTP_HOST,
+            settings.SMTP_PORT,
+            timeout=settings.SMTP_TIMEOUT_SECONDS,
+            context=context,
+        ) as server:
+            if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
+                server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+            yield server
+        return
+
+    with smtplib.SMTP(
+        settings.SMTP_HOST,
+        settings.SMTP_PORT,
+        timeout=settings.SMTP_TIMEOUT_SECONDS,
+    ) as server:
+        server.ehlo()
+        if settings.SMTP_USE_TLS:
+            server.starttls(context=context)
+            server.ehlo()
+        if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
+            server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+        yield server
 
 def clean_email_header(value):
     return " ".join(str(value or "").splitlines()).strip()
@@ -335,31 +426,14 @@ def send_contact_notification(message_id: int, payload: dict, created_at: str):
             subtype="html",
         )
 
-        context = ssl.create_default_context()
-
-        if settings.SMTP_USE_SSL:
-            with smtplib.SMTP_SSL(
-                settings.SMTP_HOST,
-                settings.SMTP_PORT,
-                timeout=settings.SMTP_TIMEOUT_SECONDS,
-                context=context,
-            ) as server:
-                if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
-                    server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-                server.send_message(email)
-        else:
-            with smtplib.SMTP(
-                settings.SMTP_HOST,
-                settings.SMTP_PORT,
-                timeout=settings.SMTP_TIMEOUT_SECONDS,
-            ) as server:
-                if settings.SMTP_USE_TLS:
-                    server.starttls(context=context)
-                if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
-                    server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-                server.send_message(email)
-    except Exception:
-        logger.exception("SMTP notification failed for contact message %s", message_id)
+        with smtp_client() as server:
+            server.send_message(email)
+    except Exception as error:
+        logger.exception(
+            "SMTP notification failed for contact message %s: %s",
+            message_id,
+            smtp_error_detail(error),
+        )
 
 @app.get("/api/location/reverse")
 @limiter.limit("10/minute")
@@ -415,6 +489,61 @@ def login(login_data: schemas.LoginRequest, request: Request):
 @app.get("/api/verify-token")
 def verify_admin_token(_: bool = Depends(get_current_admin)):
     return {"valid": True}
+
+@app.get("/api/smtp/status")
+def get_smtp_status(_: bool = Depends(get_current_admin)):
+    return smtp_config_status()
+
+@app.post("/api/smtp/test")
+def send_smtp_test(_: bool = Depends(get_current_admin)):
+    config_status = smtp_config_status()
+    if not smtp_notifications_enabled():
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "message": "SMTP notifications are not fully configured.",
+                "config": config_status,
+            },
+        )
+
+    now = datetime.now(IST_TIMEZONE).strftime("%d %b %Y, %I:%M %p IST")
+    email = EmailMessage()
+    email["Subject"] = "Portfolio SMTP test"
+    email["From"] = formataddr((settings.SMTP_FROM_NAME, settings.SMTP_FROM_EMAIL))
+    email["To"] = clean_email_header(settings.CONTACT_NOTIFICATION_EMAIL)
+    email["Date"] = formatdate(localtime=True)
+    email.set_content(
+        "\n".join(
+            [
+                "SMTP test from the portfolio backend.",
+                "",
+                f"Sent at: {now}",
+                f"SMTP host: {settings.SMTP_HOST}:{settings.SMTP_PORT}",
+            ]
+        )
+    )
+
+    try:
+        with smtp_client() as server:
+            server.send_message(email)
+    except Exception as error:
+        error_detail = smtp_error_detail(error)
+        logger.exception("SMTP test failed: %s", error_detail)
+        raise HTTPException(
+            status_code=502,
+            detail={
+                "message": "SMTP test failed.",
+                "error": error_detail,
+                "config": config_status,
+            },
+        ) from error
+
+    return {
+        "ok": True,
+        "message": "SMTP test email sent.",
+        "to": config_status["notification_email"],
+        "config": config_status,
+    }
 
 @app.get("/api/public-content", response_model=schemas.PublicContentResponse)
 def get_public_content(db: Session = Depends(get_db)):

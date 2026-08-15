@@ -9,6 +9,12 @@ def env_bool(name, default=False):
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
+def env_text(name, default=None):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip()
+
 class Settings:
     ENV = os.getenv("ENV", "development")
 
@@ -28,14 +34,14 @@ class Settings:
     ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")]
 
     # SMTP notifications for contact-form leads.
-    SMTP_HOST = os.getenv("SMTP_HOST")
+    SMTP_HOST = env_text("SMTP_HOST")
     SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-    _SMTP_USERNAME = os.getenv("SMTP_USERNAME")
-    SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-    SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL") or _SMTP_USERNAME or ""
+    _SMTP_USERNAME = env_text("SMTP_USERNAME")
+    SMTP_PASSWORD = env_text("SMTP_PASSWORD")
+    SMTP_FROM_EMAIL = env_text("SMTP_FROM_EMAIL") or _SMTP_USERNAME or ""
     SMTP_USERNAME = _SMTP_USERNAME or SMTP_FROM_EMAIL
-    SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "Portfolio Contact")
-    CONTACT_NOTIFICATION_EMAIL = os.getenv("CONTACT_NOTIFICATION_EMAIL", SMTP_FROM_EMAIL)
+    SMTP_FROM_NAME = env_text("SMTP_FROM_NAME", "Portfolio Contact")
+    CONTACT_NOTIFICATION_EMAIL = env_text("CONTACT_NOTIFICATION_EMAIL", SMTP_FROM_EMAIL)
     SMTP_USE_TLS = env_bool("SMTP_USE_TLS", True)
     SMTP_USE_SSL = env_bool("SMTP_USE_SSL", False)
     SMTP_TIMEOUT_SECONDS = int(os.getenv("SMTP_TIMEOUT_SECONDS", 5))
