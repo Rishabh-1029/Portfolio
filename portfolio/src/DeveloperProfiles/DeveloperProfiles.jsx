@@ -11,11 +11,12 @@ import "./DeveloperProfiles.css";
 
 const GITHUB_USERNAME = "Rishabh-1029";
 const LEETCODE_USERNAME = "rspsurana";
-const CACHE_KEY = "rishabh-developer-profile-metrics-v2";
+const CACHE_KEY = "rishabh-developer-profile-metrics-v4";
 const REFRESH_DELAY_MS = 900;
 const REQUEST_TIMEOUT_MS = 9000;
-const rawManualGithubContributions = import.meta.env
-  .VITE_GITHUB_CONTRIBUTIONS_LAST_YEAR;
+const rawManualGithubContributions =
+  import.meta.env.VITE_GITHUB_TOTAL_CONTRIBUTIONS ||
+  import.meta.env.VITE_GITHUB_CONTRIBUTIONS_LAST_YEAR;
 const MANUAL_GITHUB_CONTRIBUTIONS =
   rawManualGithubContributions === undefined ||
   rawManualGithubContributions === ""
@@ -50,9 +51,9 @@ const fallbackMetrics = {
     profileUrl: "https://github.com/Rishabh-1029",
     publicRepos: 12,
     followers: 1,
-    contributionsLastYear: hasManualGithubContributions
+    contributionsTotal: hasManualGithubContributions
       ? MANUAL_GITHUB_CONTRIBUTIONS
-      : 223,
+      : 316,
     latestPush: "2026-08-02T07:23:26Z",
     topLanguages: [
       { name: "JavaScript", count: 5, color: languageColors.JavaScript },
@@ -105,7 +106,7 @@ const applyManualGithubContributions = (metrics) => {
     ...metrics,
     github: {
       ...metrics.github,
-      contributionsLastYear: MANUAL_GITHUB_CONTRIBUTIONS,
+      contributionsTotal: MANUAL_GITHUB_CONTRIBUTIONS,
     },
   };
 };
@@ -143,6 +144,7 @@ const fetchJson = async (url, signal) => {
 
   try {
     const response = await fetch(url, {
+      cache: "no-store",
       headers: { Accept: "application/json" },
       signal: controller.signal,
     });
@@ -158,14 +160,32 @@ const fetchJson = async (url, signal) => {
   }
 };
 
+const getGithubContributionsUrl = (year) => {
+  const params = new URLSearchParams({
+    y: String(year),
+    refresh: Date.now().toString(),
+  });
+
+  return `https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?${params}`;
+};
+
 const getLanguageColor = (language) =>
   languageColors[language] || languageColors.Other;
 
-const getContributionTotal = (data, fallback) => {
-  if (hasManualGithubContributions) return MANUAL_GITHUB_CONTRIBUTIONS;
+const getContributionYears = (createdAt) => {
+  const createdYear = new Date(createdAt).getFullYear();
+  const currentYear = new Date().getFullYear();
+  const startYear = Number.isFinite(createdYear) ? createdYear : currentYear;
 
-  const lastYearTotal = Number(data?.total?.lastYear);
-  if (Number.isFinite(lastYearTotal)) return lastYearTotal;
+  return Array.from(
+    { length: Math.max(currentYear - startYear + 1, 1) },
+    (_, index) => startYear + index,
+  );
+};
+
+const getYearContributionTotal = (data, year) => {
+  const yearlyTotal = Number(data?.total?.[year]);
+  if (Number.isFinite(yearlyTotal)) return yearlyTotal;
 
   if (Array.isArray(data?.contributions)) {
     return data.contributions.reduce(
@@ -174,10 +194,47 @@ const getContributionTotal = (data, fallback) => {
     );
   }
 
-  return fallback ?? fallbackMetrics.github.contributionsLastYear;
+  return 0;
 };
 
-const normalizeGithub = (user, repos, contributions, fallbackContributions) => {
+const fetchGithubContributionTotal = async (createdAt, signal) => {
+  const yearlyResults = await Promise.allSettled(
+    getContributionYears(createdAt).map(async (year) => ({
+      year,
+      data: await fetchJson(getGithubContributionsUrl(year), signal),
+    })),
+  );
+
+  const fulfilledResults = yearlyResults.filter(
+    (result) => result.status === "fulfilled",
+  );
+
+  if (!fulfilledResults.length) {
+    throw new Error("No GitHub contribution years could be loaded");
+  }
+
+  return fulfilledResults.reduce(
+    (total, result) =>
+      total + getYearContributionTotal(result.value.data, result.value.year),
+    0,
+  );
+};
+
+const resolveContributionTotal = (value, fallback) => {
+  if (hasManualGithubContributions) return MANUAL_GITHUB_CONTRIBUTIONS;
+
+  const total = Number(value);
+  if (Number.isFinite(total)) return total;
+
+  return fallback ?? fallbackMetrics.github.contributionsTotal;
+};
+
+const normalizeGithub = (
+  user,
+  repos,
+  contributionTotal,
+  fallbackContributions,
+) => {
   const ownRepos = Array.isArray(repos)
     ? repos.filter((repo) => !repo.fork)
     : [];
@@ -195,8 +252,8 @@ const normalizeGithub = (user, repos, contributions, fallbackContributions) => {
     profileUrl: user.html_url || fallbackMetrics.github.profileUrl,
     publicRepos: user.public_repos || ownRepos.length,
     followers: user.followers || 0,
-    contributionsLastYear: getContributionTotal(
-      contributions,
+    contributionsTotal: resolveContributionTotal(
+      contributionTotal,
       fallbackContributions,
     ),
     latestPush:
@@ -266,8 +323,8 @@ const DeveloperProfiles = () => {
     const refreshId = window.setTimeout(async () => {
       setRefreshState("refreshing");
 
-      const [githubUser, githubRepos, githubContributions, leetcodeStats] =
-        await Promise.allSettled([
+      const [githubUser, githubRepos, leetcodeStats] = await Promise.allSettled(
+        [
           fetchJson(
             `https://api.github.com/users/${GITHUB_USERNAME}`,
             controller.signal,
@@ -277,14 +334,23 @@ const DeveloperProfiles = () => {
             controller.signal,
           ),
           fetchJson(
-            `https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?y=last`,
-            controller.signal,
-          ),
-          fetchJson(
             `https://leetcode-api-faisalshohag.vercel.app/${LEETCODE_USERNAME}`,
             controller.signal,
           ),
-        ]);
+        ],
+      );
+
+      const githubContributions =
+        githubUser.status === "fulfilled"
+          ? await Promise.resolve(
+              fetchGithubContributionTotal(
+                githubUser.value.created_at,
+                controller.signal,
+              ),
+            )
+              .then((value) => ({ status: "fulfilled", value }))
+              .catch((reason) => ({ status: "rejected", reason }))
+          : { status: "rejected" };
 
       if (controller.signal.aborted) return;
 
@@ -297,7 +363,7 @@ const DeveloperProfiles = () => {
                 githubUser.value,
                 githubRepos.value,
                 githubContributions.value,
-                currentMetrics.github.contributionsLastYear,
+                currentMetrics.github.contributionsTotal,
               )
             : githubUser.status === "fulfilled" &&
                 githubRepos.status === "fulfilled"
@@ -305,9 +371,17 @@ const DeveloperProfiles = () => {
                   githubUser.value,
                   githubRepos.value,
                   null,
-                  currentMetrics.github.contributionsLastYear,
+                  currentMetrics.github.contributionsTotal,
                 )
-              : currentMetrics.github;
+              : githubContributions.status === "fulfilled"
+                ? {
+                    ...currentMetrics.github,
+                    contributionsTotal: resolveContributionTotal(
+                      githubContributions.value,
+                      currentMetrics.github.contributionsTotal,
+                    ),
+                  }
+                : currentMetrics.github;
         const leetcode =
           leetcodeStats.status === "fulfilled"
             ? normalizeLeetcode(leetcodeStats.value)
@@ -410,7 +484,7 @@ const DeveloperProfiles = () => {
             <div className="developer-metrics-grid github-metrics-grid">
               <Metric
                 icon={<FaFolderOpen />}
-                label="Repos"
+                label="Repositories"
                 value={github.publicRepos}
               />
               <Metric
@@ -423,9 +497,9 @@ const DeveloperProfiles = () => {
                 label={
                   hasManualGithubContributions
                     ? "Contributions"
-                    : "Public Contributions"
+                    : "Total Public Contributions "
                 }
-                value={github.contributionsLastYear}
+                value={github.contributionsTotal}
                 className="highlight-metric"
               />
             </div>
