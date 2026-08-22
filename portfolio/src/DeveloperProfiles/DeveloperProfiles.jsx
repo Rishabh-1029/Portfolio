@@ -11,7 +11,7 @@ import "./DeveloperProfiles.css";
 
 const GITHUB_USERNAME = "Rishabh-1029";
 const LEETCODE_USERNAME = "rspsurana";
-const CACHE_KEY = "rishabh-developer-profile-metrics-v4";
+const CACHE_KEY = "rishabh-developer-profile-metrics-v5";
 const REFRESH_DELAY_MS = 900;
 const REQUEST_TIMEOUT_MS = 9000;
 const rawManualGithubContributions =
@@ -69,15 +69,15 @@ const fallbackMetrics = {
   leetcode: {
     username: LEETCODE_USERNAME,
     profileUrl: "https://leetcode.com/u/rspsurana/",
-    totalSolved: 310,
-    easySolved: 187,
-    mediumSolved: 113,
+    totalSolved: 312,
+    easySolved: 188,
+    mediumSolved: 114,
     hardSolved: 10,
-    totalSubmissions: 568,
-    acceptedSubmissions: 424,
-    ranking: 467394,
+    totalSubmissions: 570,
+    acceptedSubmissions: 426,
+    ranking: 469148,
   },
-  lastUpdated: "2026-08-06T17:30:00.000Z",
+  lastUpdated: "2026-08-22T00:00:00.000Z",
 };
 
 const numberFormatter = new Intl.NumberFormat("en-US");
@@ -269,28 +269,80 @@ const normalizeGithub = (
   };
 };
 
-const getSubmissionCount = (submissions, difficulty) =>
-  submissions?.find((item) => item.difficulty === difficulty)?.submissions || 0;
+const getFiniteNumber = (value, fallback) => {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+};
 
-const normalizeLeetcode = (data) => ({
-  username: LEETCODE_USERNAME,
-  profileUrl: fallbackMetrics.leetcode.profileUrl,
-  totalSolved:
-    data.totalSolved ||
-    data.solvedProblem ||
-    fallbackMetrics.leetcode.totalSolved,
-  easySolved: data.easySolved || fallbackMetrics.leetcode.easySolved,
-  mediumSolved: data.mediumSolved || fallbackMetrics.leetcode.mediumSolved,
-  hardSolved: data.hardSolved || fallbackMetrics.leetcode.hardSolved,
-  totalSubmissions:
-    getSubmissionCount(data.totalSubmissions, "All") ||
-    fallbackMetrics.leetcode.totalSubmissions,
-  acceptedSubmissions:
-    getSubmissionCount(data.matchedUserStats?.acSubmissionNum, "All") ||
-    getSubmissionCount(data.acSubmissionNum, "All") ||
-    fallbackMetrics.leetcode.acceptedSubmissions,
-  ranking: data.ranking || fallbackMetrics.leetcode.ranking,
-});
+const firstDefined = (...values) =>
+  values.find((value) => value !== undefined && value !== null);
+
+const getSubmissionValue = (submissions, difficulty, key = "submissions") => {
+  if (!Array.isArray(submissions)) return undefined;
+
+  return submissions.find((item) => item.difficulty === difficulty)?.[key];
+};
+
+const normalizeLeetcode = (data) => {
+  const acceptedStats =
+    data.submitStats?.acSubmissionNum ||
+    data.matchedUserStats?.acSubmissionNum ||
+    data.acSubmissionNum;
+  const totalSubmissionStats =
+    data.submitStats?.totalSubmissionNum || data.totalSubmissions;
+
+  return {
+    username: data.username || LEETCODE_USERNAME,
+    profileUrl: fallbackMetrics.leetcode.profileUrl,
+    totalSolved: getFiniteNumber(
+      firstDefined(
+        data.totalSolved,
+        data.solvedProblem,
+        getSubmissionValue(acceptedStats, "All", "count"),
+      ),
+      fallbackMetrics.leetcode.totalSolved,
+    ),
+    easySolved: getFiniteNumber(
+      firstDefined(
+        data.easySolved,
+        getSubmissionValue(acceptedStats, "Easy", "count"),
+      ),
+      fallbackMetrics.leetcode.easySolved,
+    ),
+    mediumSolved: getFiniteNumber(
+      firstDefined(
+        data.mediumSolved,
+        getSubmissionValue(acceptedStats, "Medium", "count"),
+      ),
+      fallbackMetrics.leetcode.mediumSolved,
+    ),
+    hardSolved: getFiniteNumber(
+      firstDefined(
+        data.hardSolved,
+        getSubmissionValue(acceptedStats, "Hard", "count"),
+      ),
+      fallbackMetrics.leetcode.hardSolved,
+    ),
+    totalSubmissions: getFiniteNumber(
+      firstDefined(
+        getSubmissionValue(totalSubmissionStats, "All"),
+        getSubmissionValue(totalSubmissionStats, "All", "count"),
+      ),
+      fallbackMetrics.leetcode.totalSubmissions,
+    ),
+    acceptedSubmissions: getFiniteNumber(
+      firstDefined(
+        getSubmissionValue(acceptedStats, "All"),
+        getSubmissionValue(acceptedStats, "All", "count"),
+      ),
+      fallbackMetrics.leetcode.acceptedSubmissions,
+    ),
+    ranking: getFiniteNumber(
+      firstDefined(data.ranking, data.profile?.ranking),
+      fallbackMetrics.leetcode.ranking,
+    ),
+  };
+};
 
 const Metric = ({ icon, label, value, className = "" }) => (
   <div className={`developer-metric ${className}`}>
@@ -334,7 +386,7 @@ const DeveloperProfiles = () => {
             controller.signal,
           ),
           fetchJson(
-            `https://leetcode-api-faisalshohag.vercel.app/${LEETCODE_USERNAME}`,
+            `https://leetcode-api-pied.vercel.app/user/${LEETCODE_USERNAME}`,
             controller.signal,
           ),
         ],
