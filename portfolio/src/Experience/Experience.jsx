@@ -6,6 +6,8 @@ import NextedgeLogo from "../assets/nextedge-logo.webp";
 import { FaBuilding } from "react-icons/fa";
 import { usePublicContent } from "../content/usePublicContent.js";
 
+const NEXTEDGE_WEBSITE = "https://nextedgetalents.com/";
+
 const companyIconMap = {
   "Vasitum Tech (Maven Workforce)": VasitumLogo,
   "Comvision India Ltd.": ComvisionLogo,
@@ -43,6 +45,24 @@ const Experience = () => {
                 ? NextedgeLogo
                 : null);
             const isNextedge = normalizedCompany.includes("nextedge talents");
+            const experiencePoints = Array.isArray(exp.points)
+              ? exp.points
+              : [exp.description].filter(Boolean);
+            const hasNextedgeWebsite = experiencePoints.some(
+              (point) =>
+                typeof point !== "string" && point?.link === NEXTEDGE_WEBSITE,
+            );
+            const displayedPoints =
+              isNextedge && !hasNextedgeWebsite
+                ? [
+                    ...experiencePoints,
+                    {
+                      text: "Company website",
+                      link: NEXTEDGE_WEBSITE,
+                      linkText: "Nextedge Talents",
+                    },
+                  ]
+                : experiencePoints;
 
             return (
               <div key={index} className="experience-card hover-lift">
@@ -83,31 +103,27 @@ const Experience = () => {
                     </div>
 
                     <ul className="experience-points">
-                      {Array.isArray(exp.points) ? (
-                        exp.points.map((point, i) => (
-                          <li key={i}>
-                            {typeof point === "string" ? (
-                              point
-                            ) : point.link ? (
-                              <>
-                                {point.text}:{" "}
-                                <a
-                                  href={point.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="portfolio-link"
-                                >
-                                  {point.linkText}
-                                </a>
-                              </>
-                            ) : (
-                              point.text
-                            )}
-                          </li>
-                        ))
-                      ) : (
-                        <li>{exp.description}</li>
-                      )}
+                      {displayedPoints.map((point, i) => (
+                        <li key={`${exp.id ?? index}-${i}`}>
+                          {typeof point === "string" ? (
+                            point
+                          ) : point?.link ? (
+                            <>
+                              {point.text}: {" "}
+                              <a
+                                href={point.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="portfolio-link"
+                              >
+                                {point.linkText}
+                              </a>
+                            </>
+                          ) : (
+                            point?.text ?? ""
+                          )}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
