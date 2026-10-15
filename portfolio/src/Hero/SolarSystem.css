@@ -1,0 +1,107 @@
+.solar-system {
+  position: absolute;
+  z-index: 1;
+  top: clamp(76px, 9vh, 108px);
+  right: clamp(18px, 4vw, 58px);
+  width: clamp(230px, 27vw, 330px);
+  aspect-ratio: 1;
+  isolation: isolate;
+  pointer-events: none;
+  user-select: none;
+}
+
+.solar-system__quiet-zone {
+  position: absolute;
+  z-index: 0;
+  inset: -16%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(3, 3, 5, 0.54) 0%,
+    rgba(3, 3, 5, 0.38) 43%,
+    rgba(3, 3, 5, 0.13) 68%,
+    transparent 84%
+  );
+  filter: blur(12px);
+}
+
+.solar-system__svg {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0.31;
+  mask-image: radial-gradient(ellipse at center, #000 42%, transparent 82%);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 42%, transparent 82%);
+  filter: drop-shadow(0 0 12px rgba(78, 153, 205, 0.12));
+}
+
+.solar-system__orbit {
+  stroke: rgba(164, 203, 235, 0.58);
+  stroke-width: 0.55;
+  stroke-dasharray: 1.2 2.8;
+}
+
+.solar-system__revolution {
+  transform-box: view-box;
+  transform-origin: center;
+  animation: solar-system-revolution var(--orbit-period) linear infinite;
+}
+
+.solar-system__planet {
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 0.45;
+}
+
+.solar-system__saturn-ring {
+  fill: none;
+  stroke: rgba(238, 214, 167, 0.8);
+  stroke-width: 1;
+}
+
+.solar-system__star {
+  fill: rgba(218, 235, 255, 0.68);
+}
+
+.solar-system__sun-glow {
+  fill: url(#solar-system-sun);
+  animation: solar-system-pulse 5s ease-in-out infinite;
+}
+
+.solar-system__sun-core {
+  fill: #ffe2a1;
+  filter: drop-shadow(0 0 5px rgba(255, 206, 119, 0.75));
+}
+
+@keyframes solar-system-revolution {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes solar-system-pulse {
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@media (max-width: 768px) {
+  .solar-system {
+    top: 92px;
+    right: -56px;
+    width: 240px;
+  }
+
+  .solar-system__svg {
+    opacity: 0.27;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solar-system__revolution,
+  .solar-system__sun-glow {
+    animation: none;
+  }
+}

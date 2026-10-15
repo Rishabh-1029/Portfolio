@@ -2,12 +2,14 @@ import "./Hero.css";
 import profileImg from "../assets/profile.jpg"; // add your image here
 import { motion } from "framer-motion";
 import TaglineStrip from "../TaglineStrip";
+import SolarSystem from "./SolarSystem";
 
 const MotionDiv = motion.div;
 
 const Hero = () => {
   return (
     <section id="home" className="hero">
+      <SolarSystem />
       <div className="hero-container">
         {/* Text CONTENT */}
         <MotionDiv

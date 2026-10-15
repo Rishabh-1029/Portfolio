@@ -9,6 +9,9 @@ A full-stack personal portfolio with a React public site, a FastAPI content API,
 ## Highlights
 
 - Glassmorphism portfolio UI with responsive project, achievement, and education sections.
+- Eight dedicated project case studies with project context, technical details, and source or live-demo links where available.
+- Subtle animated solar-system artwork in the hero, with a quiet background area around it and reduced-motion support.
+- Crawler-readable project and experience metadata, including Open Graph, Twitter cards, Schema.org JSON-LD, and a no-JavaScript content fallback.
 - Database-backed content and a protected admin dashboard for managing portfolio data.
 - Blog Markdown reader supports Mermaid diagrams with in-modal zoom controls.
 - Contact messages are saved to the backend inbox first, then optionally sent as SMTP email alerts without delaying the visitor's success state.
@@ -25,6 +28,18 @@ A full-stack personal portfolio with a React public site, a FastAPI content API,
 | Frontend | React 19, Vite, React Router, Framer Motion, Axios, React Icons, React Markdown, Mermaid |
 | Backend  | FastAPI, SQLAlchemy, Uvicorn, Pydantic                                                   |
 | Data     | SQLite for local development, PostgreSQL for production                                  |
+
+---
+
+## Project Case Studies & Metadata
+
+Each featured project has a dedicated route under `/projects/`. Case studies are available for TrueDrive, RateEx, Portfolio, EasyLearn, VIDES, BlogStory, ANPR, and Vasitum Dashboard. Live demos are embedded where available; otherwise, the case study links to the project source.
+
+The initial HTML in `portfolio/index.html` includes social preview tags and Schema.org data for the project list, case-study routes, repositories, live apps, and professional experience. A `<noscript>` section provides a concise portfolio and experience summary when JavaScript is unavailable.
+
+## Hero Visual
+
+The home hero includes a small SVG solar-system illustration animated with CSS. Its orbital motion is disabled when the visitor requests reduced motion. A soft local backdrop keeps the site-wide particle effect from competing with the illustration.
 
 ---
 
