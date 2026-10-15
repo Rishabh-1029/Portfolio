@@ -1,6 +1,7 @@
 import "./Hero.css";
 import profileImg from "../assets/profile.jpg"; // add your image here
 import { motion } from "framer-motion";
+import TaglineStrip from "../TaglineStrip";
 
 const MotionDiv = motion.div;
 
@@ -19,16 +20,19 @@ const Hero = () => {
             Hi, I’m <span className="gradient-text">Rishabh Surana</span>
           </h1>
 
+          <p className="hero-credentials">
+            <strong>Software Engineer</strong>
+            <span aria-hidden="true">·</span>
+            <span>B.Tech CSE (AI/ML), Bennett University</span>
+          </p>
+
           <p className="hero-tagline">
-            <strong>Software Engineer</strong> and a <strong>B.Tech CSE</strong>{" "}
-            graduate from <strong>Bennett University</strong>. Specialize in
-            architecting intelligent systems, not just writing scripts. From
-            building custom AI/ML pipelines to designing reliable and scalable
-            systems.{" "}
+            I build intelligent systems, not just scripts.
           </p>
 
           <p className="hero-subtext">
-            I bridge the gap between core dev skills and product-focused
+            From custom AI/ML pipelines to reliable, scalable systems, I bring
+            core development skills together with product-focused
             infrastructure.
           </p>
 
@@ -60,6 +64,7 @@ const Hero = () => {
           </div>
         </MotionDiv>
       </div>
+      <TaglineStrip />
     </section>
   );
 };

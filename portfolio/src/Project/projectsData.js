@@ -4,6 +4,17 @@ import TrurDrive from "../assets/TrueDrive.png";
 import VasitumLogo from "../assets/vaistum.png";
 import ANPRLOGO from "../assets/ANPRLOGO.jpeg";
 import BlogstoryLogo from "../assets/BlogStory.png";
+import RateExLogo from "../assets/RateEx.svg";
+import PortfolioLogo from "../assets/Portfolio.svg";
+
+export const RATEEX_TECH_STACK_GROUPS = [
+  { label: "Backend", technologies: ["Python", "FastAPI"] },
+  { label: "Frontend", technologies: ["React"] },
+  { label: "Database", technologies: ["PostgreSQL", "MongoDB"] },
+];
+export const RATEEX_TECH_STACK = RATEEX_TECH_STACK_GROUPS.flatMap(
+  ({ technologies }) => technologies,
+);
 
 export const projectsData = [
   {
@@ -77,5 +88,29 @@ export const projectsData = [
     live: "https://vasitum-rishabh-dashboard.netlify.app/",
     github: "https://github.com/Rishabh-1029/Vasitum-dashboard",
     logo: VasitumLogo,
+  },
+  {
+    id: 7,
+    title: "Portfolio",
+    period: "Ongoing",
+    description:
+      "Full-stack portfolio and CMS platform with database-backed content, a protected admin dashboard, Markdown publishing, analytics, and a contact inbox.",
+    tech: ["React", "FastAPI", "SQLAlchemy", "PostgreSQL", "JWT", "Mermaid"],
+    gradient: "portfolio-gradient",
+    live: "https://rishabh-surana.netlify.app/",
+    github: "https://github.com/Rishabh-1029/Portfolio",
+    logo: PortfolioLogo,
+  },
+  {
+    id: 8,
+    title: "RateEx",
+    period: "In development",
+    description:
+      "Reusable rate-limiting infrastructure for services, with an analytics dashboard for understanding API usage. Inspired by managing external API limits in EasyLearn.",
+    tech: RATEEX_TECH_STACK,
+    gradient: "rateex-gradient",
+    live: "",
+    github: "https://github.com/Rishabh-1029/rate-limiter",
+    logo: RateExLogo,
   },
 ];

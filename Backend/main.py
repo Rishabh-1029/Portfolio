@@ -55,6 +55,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    return response
+
 @app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
 def service_health():
     return {"status": "ok"}
@@ -458,15 +467,25 @@ def queue_contact_notification(message_id: int, payload: dict, created_at: str):
     thread.start()
 
 # Auth Dependency
-def verify_token(token: str = Depends(lambda: "")): # Simplified for header parsing below
-    pass
-
 from fastapi.security import OAuth2PasswordBearer
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/login")
 
 def get_current_admin(token: str = Depends(oauth2_scheme)):
+    # Admin JWTs are small. Reject oversized attacker-controlled headers before
+    # they reach the JWT parser.
+    if len(token) > 2048:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+        )
+
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(
+            token,
+            settings.JWT_SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
+            options={"require": ["exp", "sub"]},
+        )
         if payload.get("sub") != "admin":
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     except jwt.PyJWTError:
@@ -476,13 +495,23 @@ def get_current_admin(token: str = Depends(oauth2_scheme)):
 @app.post("/api/login", response_model=schemas.Token)
 @limiter.limit("5/minute")
 def login(login_data: schemas.LoginRequest, request: Request):
-    # Verify password against hash
-    is_valid = bcrypt.checkpw(login_data.password.encode('utf-8'), settings.ADMIN_PASSWORD_HASH.encode('utf-8'))
+    # bcrypt only accepts up to 72 input bytes. Treat longer UTF-8 passwords as
+    # invalid rather than allowing bcrypt to raise a server error.
+    password_bytes = login_data.password.encode("utf-8")
+    is_valid = False
+    if len(password_bytes) <= 72:
+        try:
+            is_valid = bcrypt.checkpw(
+                password_bytes,
+                settings.ADMIN_PASSWORD_HASH.encode("utf-8"),
+            )
+        except ValueError:
+            is_valid = False
     if not is_valid:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password")
     
     # Generate JWT
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token = jwt.encode({"sub": "admin", "exp": expire}, settings.JWT_SECRET_KEY, algorithm=settings.ALGORITHM)
     return {"access_token": token, "token_type": "bearer"}
 
@@ -722,16 +751,16 @@ def get_analytics(db: Session = Depends(get_db), _: bool = Depends(get_current_a
 @app.post("/api/analytics", response_model=schemas.AnalyticEventResponse)
 @limiter.limit("20/minute")
 def create_analytics(item: schemas.AnalyticEventCreate, request: Request, db: Session = Depends(get_db)):
-    # Resolve real visitor IP (supports reverse proxies / Render / CDNs)
-    forwarded = request.headers.get("X-Forwarded-For")
-    client_ip = forwarded.split(",")[0].strip() if forwarded else (
-        request.client.host if request.client else "unknown"
-    )
+    # Only use the direct peer address here. X-Forwarded-For is user-controlled
+    # unless the app is configured with a trusted-proxy allowlist.
+    client_ip = request.client.host if request.client else "unknown"
 
     # Merge IP into whatever metadata the frontend already sent
     try:
         meta = json.loads(item.metadata_json) if item.metadata_json else {}
     except Exception:
+        meta = {}
+    if not isinstance(meta, dict):
         meta = {}
     meta["ip"] = client_ip
 

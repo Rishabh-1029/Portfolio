@@ -1,0 +1,115 @@
+.tagline-ribbon {
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  flex: 0 0 auto;
+  width: 100vw;
+  margin-left: -5vw;
+  padding: 1.1rem 0;
+  border-block: 1px solid rgba(255, 255, 255, 0.07);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 240, 255, 0.025),
+    rgba(139, 92, 246, 0.075),
+    rgba(0, 240, 255, 0.025)
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 7%,
+    #000 93%,
+    transparent
+  );
+}
+
+.tagline-ribbon-accessible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tagline-ribbon-track {
+  display: flex;
+  width: max-content;
+  animation: tagline-ribbon-scroll 42s linear infinite;
+  will-change: transform;
+}
+
+.tagline-ribbon-group {
+  display: flex;
+  min-width: 100vw;
+  align-items: center;
+  justify-content: space-around;
+  gap: 3.5rem;
+  padding: 0 1.75rem;
+}
+
+.tagline-ribbon-phrase {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.1rem;
+  color: rgba(226, 232, 240, 0.7);
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tagline-ribbon-words {
+  color: var(--text-primary);
+}
+
+.tagline-ribbon-phrase:nth-child(even) .tagline-ribbon-words {
+  color: #d8ceff;
+}
+
+.tagline-ribbon-code-mark {
+  padding: 0.2rem 0.42rem;
+  border: 1px solid rgba(0, 240, 255, 0.22);
+  border-radius: 6px;
+  background: rgba(0, 240, 255, 0.045);
+  color: var(--primary-accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.tagline-ribbon:hover .tagline-ribbon-track {
+  animation-play-state: paused;
+}
+
+@keyframes tagline-ribbon-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .tagline-ribbon {
+    padding: 0.9rem 0;
+  }
+
+  .tagline-ribbon-group {
+    gap: 2.25rem;
+  }
+
+  .tagline-ribbon-phrase {
+    font-size: 0.74rem;
+  }
+
+  .tagline-ribbon-code-mark {
+    font-size: 0.72rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tagline-ribbon-track {
+    animation: none;
+  }
+}

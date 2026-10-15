@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 470 160" role="img" aria-labelledby="title desc">
+  <title id="title">Rishabh Surana Portfolio</title>
+  <desc id="desc">A portfolio page icon with a purple and cyan Portfolio wordmark</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#222354"/>
+      <stop offset="1" stop-color="#081725"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8b7cff"/>
+      <stop offset="1" stop-color="#42e4db"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="152" height="152" rx="34" fill="url(#background)" stroke="#53619a" stroke-width="2"/>
+  <rect x="25" y="25" width="110" height="110" rx="15" fill="#0d1729" stroke="#7182bd" stroke-width="2"/>
+  <path d="M25 48h110" stroke="#53658e" stroke-width="2"/>
+  <circle cx="38" cy="37" r="3" fill="#ff7d9e"/>
+  <circle cx="48" cy="37" r="3" fill="#ffd166"/>
+  <circle cx="58" cy="37" r="3" fill="#42e4db"/>
+  <circle cx="53" cy="77" r="17" fill="url(#accent)"/>
+  <path d="M53 64v26M46 65h11a6 6 0 0 1 0 12H46m8 0 9 12" fill="none" stroke="#10182c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="79" y="63" width="41" height="6" rx="3" fill="#e7ecff"/>
+  <rect x="79" y="76" width="31" height="5" rx="2.5" fill="#98a6cf"/>
+  <rect x="39" y="104" width="35" height="19" rx="5" fill="#202d4a" stroke="#6477ad" stroke-width="1.5"/>
+  <rect x="81" y="104" width="40" height="19" rx="5" fill="#202d4a" stroke="#6477ad" stroke-width="1.5"/>
+  <rect x="45" y="111" width="21" height="3" rx="1.5" fill="#8b7cff"/>
+  <rect x="87" y="111" width="27" height="3" rx="1.5" fill="#42e4db"/>
+  <text
+    x="184"
+    y="101"
+    fill="url(#accent)"
+    font-family="Outfit, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="40"
+    font-weight="800"
+    letter-spacing="2"
+  >PORTFOLIO</text>
+</svg>

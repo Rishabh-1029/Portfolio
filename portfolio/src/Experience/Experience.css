@@ -78,6 +78,16 @@
   object-fit: contain;
 }
 
+.experience-icon--nextedge {
+  background: #fff;
+  border-color: #fff;
+}
+
+.experience-icon--nextedge img {
+  width: 90%;
+  height: 90%;
+}
+
 .experience-card:hover .experience-icon {
   transform: scale(1.05) rotate(-5deg);
   border-color: var(--primary-accent);

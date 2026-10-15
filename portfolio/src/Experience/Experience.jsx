@@ -2,6 +2,7 @@ import "./Experience.css";
 import VasitumLogo from "../assets/vaistum.png";
 import ComvisionLogo from "../assets/comvision.jpeg";
 import Nervesparks from "../assets/Nervesparks.png";
+import NextedgeLogo from "../assets/nextedge-logo.webp";
 import { FaBuilding } from "react-icons/fa";
 import { usePublicContent } from "../content/usePublicContent.js";
 
@@ -34,71 +35,85 @@ const Experience = () => {
             No experiences available yet.
           </p>
         ) : (
-          experienceData.map((exp, index) => (
-            <div key={index} className="experience-card hover-lift">
-              <div className="experience-content">
-                {/* Icon */}
-                <div className="experience-icon">
-                  {companyIconMap[exp.company] ? (
-                    <img src={companyIconMap[exp.company]} alt={exp.company} />
-                  ) : (
-                    <div
-                      style={{
-                        fontSize: "2.5rem",
-                        color: "var(--primary-accent)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "100%",
-                        height: "100%",
-                      }}
-                    >
-                      <FaBuilding />
-                    </div>
-                  )}
-                </div>
+          experienceData.map((exp, index) => {
+            const normalizedCompany = exp.company.trim().toLowerCase();
+            const companyIcon =
+              companyIconMap[exp.company] ||
+              (normalizedCompany.includes("nextedge talents")
+                ? NextedgeLogo
+                : null);
+            const isNextedge = normalizedCompany.includes("nextedge talents");
 
-                {/* Details */}
-                <div className="experience-details">
-                  <div className="experience-top">
-                    <div>
-                      <h3>{exp.role}</h3>
-                      <span className="company">{exp.company}</span>
-                    </div>
-                    <span className="duration">{exp.period}</span>
+            return (
+              <div key={index} className="experience-card hover-lift">
+                <div className="experience-content">
+                  {/* Icon */}
+                  <div
+                    className={`experience-icon${
+                      isNextedge ? " experience-icon--nextedge" : ""
+                    }`}
+                  >
+                    {companyIcon ? (
+                      <img src={companyIcon} alt={`${exp.company} logo`} />
+                    ) : (
+                      <div
+                        style={{
+                          fontSize: "2.5rem",
+                          color: "var(--primary-accent)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      >
+                        <FaBuilding />
+                      </div>
+                    )}
                   </div>
 
-                  <ul className="experience-points">
-                    {Array.isArray(exp.points) ? (
-                      exp.points.map((point, i) => (
-                        <li key={i}>
-                          {typeof point === "string" ? (
-                            point
-                          ) : point.link ? (
-                            <>
-                              {point.text}:{" "}
-                              <a
-                                href={point.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="portfolio-link"
-                              >
-                                {point.linkText}
-                              </a>
-                            </>
-                          ) : (
-                            point.text
-                          )}
-                        </li>
-                      ))
-                    ) : (
-                      <li>{exp.description}</li>
-                    )}
-                  </ul>
+                  {/* Details */}
+                  <div className="experience-details">
+                    <div className="experience-top">
+                      <div>
+                        <h3>{exp.role}</h3>
+                        <span className="company">{exp.company}</span>
+                      </div>
+                      <span className="duration">{exp.period}</span>
+                    </div>
+
+                    <ul className="experience-points">
+                      {Array.isArray(exp.points) ? (
+                        exp.points.map((point, i) => (
+                          <li key={i}>
+                            {typeof point === "string" ? (
+                              point
+                            ) : point.link ? (
+                              <>
+                                {point.text}:{" "}
+                                <a
+                                  href={point.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="portfolio-link"
+                                >
+                                  {point.linkText}
+                                </a>
+                              </>
+                            ) : (
+                              point.text
+                            )}
+                          </li>
+                        ))
+                      ) : (
+                        <li>{exp.description}</li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </section>

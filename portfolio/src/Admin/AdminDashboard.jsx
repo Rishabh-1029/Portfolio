@@ -979,7 +979,12 @@ const AnalyticsDashboard = ({ items, loading }) => {
 };
 
 const AdminDashboard = () => {
-  const [token, setToken] = useState(localStorage.getItem("admin_token") || "");
+  const [token, setToken] = useState(() => {
+    // Admin tokens should end with the browser tab session, not persist in
+    // localStorage across browser restarts.
+    window.localStorage.removeItem("admin_token");
+    return window.sessionStorage.getItem("admin_token") || "";
+  });
   const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState("projects");
   const [items, setItems] = useState([]);
@@ -991,7 +996,7 @@ const AdminDashboard = () => {
 
   const logout = () => {
     setToken("");
-    localStorage.removeItem("admin_token");
+    window.sessionStorage.removeItem("admin_token");
   };
 
   const fetchItems = async () => {
@@ -1029,7 +1034,7 @@ const AdminDashboard = () => {
       const res = await axios.post(`${API}/login`, { password });
       const newToken = res.data.access_token;
       setToken(newToken);
-      localStorage.setItem("admin_token", newToken);
+      window.sessionStorage.setItem("admin_token", newToken);
     } catch {
       alert("Login failed. Incorrect password.");
     }

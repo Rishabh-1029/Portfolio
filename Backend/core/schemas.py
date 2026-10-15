@@ -59,14 +59,14 @@ class Token(BaseModel):
     token_type: str
 
 class LoginRequest(BaseModel):
-    password: str
+    password: str = Field(min_length=1, max_length=72)
 
 # ---- MESSAGE ----
 class MessageBase(BaseModel):
-    name: str
-    email: str
-    phone: Optional[str] = None
-    message: str
+    name: str = Field(min_length=1, max_length=120)
+    email: str = Field(min_length=3, max_length=254)
+    phone: Optional[str] = Field(default=None, max_length=40)
+    message: str = Field(min_length=1, max_length=10000)
 
 class VisitorLocation(BaseModel):
     latitude: float = Field(ge=-90, le=90)
@@ -94,9 +94,9 @@ class MessageResponse(MessageBase):
 
 # ---- ANALYTICS ----
 class AnalyticEventBase(BaseModel):
-    event_type: str
-    path: str
-    metadata_json: Optional[str] = None
+    event_type: str = Field(min_length=1, max_length=40)
+    path: str = Field(min_length=1, max_length=512)
+    metadata_json: Optional[str] = Field(default=None, max_length=10000)
 
 class AnalyticEventCreate(AnalyticEventBase):
     pass

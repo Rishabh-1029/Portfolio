@@ -103,14 +103,30 @@ const normalizeContent = (content) => {
 };
 
 const DEFAULT_CONTENT = normalizeContent(fallbackContent);
+const PINNED_CASE_STUDY_TITLES = ["Portfolio", "RateEx"];
+
+const includePinnedCaseStudies = (projects) => {
+  const pinnedProjects = DEFAULT_CONTENT.projects.filter((project) =>
+    PINNED_CASE_STUDY_TITLES.includes(project.title),
+  );
+  const existingTitles = new Set(
+    projects.map((project) => project.title.trim().toLowerCase()),
+  );
+  const missingProjects = pinnedProjects.filter(
+    (project) => !existingTitles.has(project.title.toLowerCase()),
+  );
+
+  return missingProjects.length ? ordered([...projects, ...missingProjects]) : projects;
+};
 
 const mergeWithFallback = (content) => {
   const normalized = normalizeContent(content);
+  const projects = normalized.projects.length
+    ? normalized.projects
+    : DEFAULT_CONTENT.projects;
 
   return {
-    projects: normalized.projects.length
-      ? normalized.projects
-      : DEFAULT_CONTENT.projects,
+    projects: includePinnedCaseStudies(projects),
     skills: normalized.skills.length ? normalized.skills : DEFAULT_CONTENT.skills,
     experiences: normalized.experiences.length
       ? normalized.experiences
