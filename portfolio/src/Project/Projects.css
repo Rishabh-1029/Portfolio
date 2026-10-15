@@ -35,7 +35,7 @@
 /* GRID */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
   gap: 3rem;
 }
 
@@ -47,6 +47,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .project-card--clickable {
@@ -145,6 +146,7 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .project-period {
@@ -239,7 +241,120 @@
 
 @media (max-width: 768px) {
   .projects-section {
-    padding: 4rem 5%;
+    padding: 3.5rem 5%;
+  }
+
+  .projects-header {
+    margin-bottom: 2.75rem;
+  }
+
+  .projects-header p {
+    font-size: 1rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .project-banner {
+    height: 150px;
+  }
+
+  .project-logo {
+    height: 72px;
+  }
+
+  .project-content {
+    padding: clamp(1.25rem, 5vw, 1.75rem);
+  }
+
+  .project-period {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    overflow-wrap: anywhere;
+  }
+
+  .project-content h3 {
+    font-size: clamp(1.45rem, 7vw, 1.7rem);
+    margin: 0.45rem 0 0.75rem;
+    overflow-wrap: anywhere;
+  }
+
+  .project-content p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    overflow-wrap: anywhere;
+  }
+
+  .project-tech {
+    gap: 0.55rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .project-tech span {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+  }
+
+  .project-links {
+    gap: 0.5rem;
+    padding-top: 1rem;
+  }
+
+  .project-links a {
+    font-size: 0.95rem;
+  }
+
+  .project-links .project-case-study-link {
+    min-width: 0;
+    min-height: 44px;
+  }
+
+  .project-links .project-source-link {
+    padding-inline: 0.25rem;
+  }
+
+  .project-card.glass-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .project-card:hover .project-logo {
+    transform: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .projects-section {
+    padding-inline: 1rem;
+  }
+
+  .project-content {
+    padding: 1.1rem;
+  }
+
+  .project-banner {
+    height: 135px;
+  }
+
+  .project-links .project-case-study-link {
+    font-size: 0.9rem;
+  }
+}
+
+@media (hover: none) {
+  .project-card:hover .project-banner::before {
+    transform: translateX(-115%);
+  }
+
+  .project-card.glass-card:hover {
+    transform: none;
+  }
+
+  .project-card:hover .project-logo,
+  .project-links a:hover {
+    transform: none;
   }
 }
 
