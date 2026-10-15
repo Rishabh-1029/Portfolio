@@ -76,10 +76,7 @@ const MermaidDiagram = ({ chart }) => {
     setZoom((currentZoom) =>
       Math.min(
         MERMAID_MAX_ZOOM,
-        Math.max(
-          MERMAID_MIN_ZOOM,
-          Number((currentZoom + amount).toFixed(2)),
-        ),
+        Math.max(MERMAID_MIN_ZOOM, Number((currentZoom + amount).toFixed(2))),
       ),
     );
   };

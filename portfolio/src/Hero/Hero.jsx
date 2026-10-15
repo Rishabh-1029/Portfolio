@@ -55,7 +55,9 @@ const Hero = () => {
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
         >
           <div className="profile-glow"></div>
-          <img src={profileImg} alt="Rishabh Surana" />
+          <div className="profile-frame">
+            <img src={profileImg} alt="Rishabh Surana" />
+          </div>
         </MotionDiv>
       </div>
     </section>
