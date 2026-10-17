@@ -125,7 +125,12 @@
   background: linear-gradient(90deg, #3122fa, #021874dc);
 }
 .project-banner.white-gradient {
-  background: linear-gradient(135deg, #e5f4ff, #f1fff8);
+  background: #fff;
+}
+
+.project-banner.white-gradient::before,
+.project-banner.white-gradient::after {
+  display: none;
 }
 .project-banner.navy-gradient {
   background: #074285;

@@ -46,10 +46,10 @@ export const projectsData = [
     title: "VIDES",
     period: "June 2025 – July 2025",
     description:
-      "Vehicle Intelligent Detection & Event System is a Real-time CV-based traffic monitoring for vehicle detection and event tracking in compliance with NHAI.",
-    tech: ["Python", "PyTorch", "OpenCV", "YOLO", "Faster R-CNN", "DeepSORT"],
+      "Real-time traffic monitoring that combines vehicle detection, multi-object tracking, speed estimation, and modular traffic-event detection.",
+    tech: ["Python 3.10+", "YOLOv8", "DeepSORT", "OpenCV", "NumPy", "Pandas"],
     gradient: "white-gradient",
-    live: "",
+    live: "https://vides.onrender.com/",
     github: "https://github.com/Rishabh-1029/VIDES",
     logo: VIDESLOGO,
   },

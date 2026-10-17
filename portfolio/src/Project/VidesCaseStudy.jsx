@@ -9,6 +9,7 @@ import VIDESLogo from "../assets/VIDES.png";
 import "./TrueDriveCaseStudy.css";
 
 const GITHUB_URL = "https://github.com/Rishabh-1029/VIDES";
+const LIVE_URL = "https://vides.onrender.com/";
 
 const technologies = [
   "Python 3.10+",
@@ -17,7 +18,7 @@ const technologies = [
   "OpenCV",
   "NumPy",
   "Pandas",
-  "Faster R-CNN experiment",
+  "Faster R-CNN (separate experiment)",
 ];
 
 const architectureSteps = [
@@ -55,7 +56,7 @@ const VidesCaseStudy = () => {
     document.title = "VIDES Case Study | Rishabh Surana";
     description?.setAttribute(
       "content",
-      "How I built VIDES, a real-time vehicle detection, tracking, and traffic event monitoring system.",
+      "Explore VIDES, a deployed real-time traffic monitoring system for vehicle detection, tracking, speed estimation, and traffic-event detection.",
     );
 
     return () => {
@@ -92,25 +93,25 @@ const VidesCaseStudy = () => {
               Making traffic <span className="gradient-text">visible.</span>
             </h1>
             <p className="case-study-lede">
-              VIDES detects and tracks vehicles in traffic video, then analyzes
-              movement to surface events such as speeding, wrong-way travel, and
-              stalling.
+              VIDES processes live or recorded traffic video, tracks vehicles
+              over time, estimates movement and speed, and flags events such as
+              overspeeding, wrong-way travel, and stalling.
             </p>
 
             <div className="case-study-actions">
               <a
-                href={GITHUB_URL}
+                href={LIVE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="case-study-button case-study-button-primary"
               >
-                View source code <FaExternalLinkAlt aria-hidden="true" />
+                Open live app <FaExternalLinkAlt aria-hidden="true" />
               </a>
               <a
-                href="#vides-validation"
+                href="#vides-demo"
                 className="case-study-button case-study-button-secondary"
               >
-                Live camera testing <FaArrowRight aria-hidden="true" />
+                View embedded demo <FaArrowRight aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -130,8 +131,8 @@ const VidesCaseStudy = () => {
           </div>
           <div>
             <span className="case-study-fact-label">Testing</span>
-            <p>Live camera feed</p>
-            <small>Tested with a live camera feed</small>
+            <p>Live deployment</p>
+            <small>Also tested with a live camera feed</small>
           </div>
           <div>
             <span className="case-study-fact-label">Built with</span>
@@ -232,12 +233,40 @@ const VidesCaseStudy = () => {
           </p>
         </section>
 
+        <section className="case-study-demo-section" id="vides-demo">
+          <div className="case-study-demo-heading">
+            <div>
+              <span className="case-study-section-index">04 / LIVE DEMO</span>
+              <h2>
+                Explore <span className="gradient-text">VIDES</span>
+              </h2>
+            </div>
+            <a href={LIVE_URL} target="_blank" rel="noopener noreferrer">
+              Open in a new tab <FaExternalLinkAlt aria-hidden="true" />
+            </a>
+          </div>
+          <div className="case-study-iframe-frame">
+            <iframe
+              src={LIVE_URL}
+              title="Live VIDES traffic monitoring application"
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allow="camera; fullscreen"
+              allowFullScreen
+            />
+          </div>
+          <p className="case-study-iframe-note">
+            If the live app does not load in this preview, open it directly in a
+            new tab. Camera access may require browser permission.
+          </p>
+        </section>
+
         <section
           className="case-study-section case-study-validation"
           id="vides-validation"
         >
           <div className="case-study-section-heading">
-            <span className="case-study-section-index">04 / VALIDATION</span>
+            <span className="case-study-section-index">05 / VALIDATION</span>
             <h2>Tested with a live camera feed.</h2>
           </div>
           <div className="case-study-section-copy">
@@ -246,8 +275,8 @@ const VidesCaseStudy = () => {
               detection, tracking, and event analysis on incoming video.
             </p>
             <p>
-              There is no public demo URL available to embed here. The source
-              repository includes the project code and setup details.
+              The deployed app is available above, and the repository includes
+              the project code and setup details.
             </p>
             <a
               href={GITHUB_URL}
