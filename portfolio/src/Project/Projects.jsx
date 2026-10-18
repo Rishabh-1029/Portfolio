@@ -81,10 +81,10 @@ const caseStudyRoutes = {
 
 const projectOrder = [
   "truedrive",
-  "rateex",
-  "portfolio",
   "easylearn",
   "vides",
+  "rateex",
+  "portfolio",
   "anpr",
   "blogstory",
   "vasitum dashboard",
