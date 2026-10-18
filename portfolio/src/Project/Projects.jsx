@@ -13,10 +13,6 @@ import ANPRLOGO from "../assets/ANPRLOGO.jpeg";
 import BlogstoryLogo from "../assets/BlogStory.png";
 import RateExLogo from "../assets/RateEx.svg";
 import PortfolioLogo from "../assets/Portfolio.svg";
-import {
-  EASY_LEARN_DESCRIPTION,
-  EASY_LEARN_TECH_STACK,
-} from "./projectsData.js";
 
 // Mappings for older items seamlessly transitioning
 const assetMap = {
@@ -151,17 +147,10 @@ const Projects = () => {
                 ["portfolio", "rateex", "easylearn"].includes(normalizedTitle)
                   ? mappedAssets.logo
                   : project.logo || mappedAssets.logo;
-              const projectDescription =
-                normalizedTitle === "easylearn"
-                  ? EASY_LEARN_DESCRIPTION
-                  : project.description;
-              const projectTech =
-                normalizedTitle === "easylearn"
-                  ? EASY_LEARN_TECH_STACK
-                  : project.tech
-                      .split(",")
-                      .map((tech) => tech.trim())
-                      .filter(Boolean);
+              const projectTech = project.tech
+                .split(",")
+                .map((tech) => tech.trim())
+                .filter(Boolean);
 
               return (
                 <MotionDiv
@@ -207,7 +196,7 @@ const Projects = () => {
                   <div className="project-content">
                     <span className="project-period">{project.period}</span>
                     <h3>{project.title}</h3>
-                    <p>{projectDescription}</p>
+                    <p>{project.description}</p>
 
                     {/* Tech Stack */}
                     <div className="project-tech">
