@@ -41,9 +41,15 @@ const architectureSteps = [
   },
   {
     number: "04",
-    title: "Optional save to Drive",
+    title: "Optional web search",
     description:
-      "With the learner’s consent, the browser uploads the lesson as a Markdown file to Google Drive.",
+      "When enabled, the backend finds current sources; the selected local model uses them to shape its explanation.",
+  },
+  {
+    number: "05",
+    title: "Save and revisit lessons",
+    description:
+      "The learner can save a lesson as Markdown to the EasyLearn Drive folder and reopen it from the Library.",
   },
 ];
 
@@ -56,7 +62,7 @@ const EasyLearnCaseStudy = () => {
     document.title = "EasyLearn Case Study | Rishabh Surana";
     description?.setAttribute(
       "content",
-      "EasyLearn is a browser-based learning app that runs language models locally, explains topics at three depths, and can save lessons to Google Drive.",
+      "EasyLearn is a browser-based learning app that explains topics at three depths with an on-device language model, optional web search, and learner-controlled Google Drive saves.",
     );
 
     return () => {
@@ -91,8 +97,10 @@ const EasyLearnCaseStudy = () => {
               Learn a topic at <span className="gradient-text">your depth.</span>
             </h1>
             <p className="case-study-lede">
-              EasyLearn is a browser-based learning app that runs a language
-              model on the learner’s device and explains topics at three depths.
+              EasyLearn helps learners explore a topic at the depth they need.
+              A language model generates lessons on their device, with optional
+              web search for current sources and learner-controlled saving to
+              Google Drive.
             </p>
 
             <div className="case-study-actions">
@@ -118,7 +126,7 @@ const EasyLearnCaseStudy = () => {
           <div className="case-study-project-mark">
             <div className="case-study-mark-glow" />
             <img src={EasyLearnLogo} alt="EasyLearn" />
-            <span>Local AI · Three learning modes · Google Drive</span>
+            <span>On-device AI · Optional web search · Google Drive</span>
           </div>
         </header>
 
@@ -150,14 +158,16 @@ const EasyLearnCaseStudy = () => {
           </div>
           <div className="case-study-section-copy">
             <p>
-              A learner may want a quick intuition, a guided explanation, or a
-              deeper technical breakdown of the same subject. EasyLearn offers
-              Quick, Guided, and Deep dive modes for those needs.
+              A learner may need a quick refresher, a step-by-step introduction,
+              or a deeper explanation of the same subject. EasyLearn offers
+              Quick, Guided, and Deep dive modes so the learner can choose how
+              far to explore.
             </p>
             <p>
               Each mode shapes the lesson differently: Quick gives the core
               idea, Guided builds it step by step, and Deep dive adds detail,
-              an example, and a self-check.
+              an example, and a self-check. When a topic needs current context,
+              the learner can enable web search and review linked sources.
             </p>
           </div>
         </section>
@@ -188,8 +198,27 @@ const EasyLearnCaseStudy = () => {
               <span className="case-study-feature-number">03</span>
               <h3>Chat-based interaction</h3>
               <p>
-                Learners can ask about concepts while keeping their prompts and
-                answers on their own device during inference.
+                Learners ask follow-up questions in a conversation. Inference
+                runs on their device, while the active conversation is saved
+                locally so it can be restored after a refresh.
+              </p>
+            </article>
+            <article className="case-study-feature-card">
+              <span className="case-study-feature-number">04</span>
+              <h3>Current sources when needed</h3>
+              <p>
+                Web search is off by default. Learners can turn it on when they
+                want recent source material to inform a locally generated
+                explanation.
+              </p>
+            </article>
+            <article className="case-study-feature-card">
+              <span className="case-study-feature-number">05</span>
+              <h3>A personal lesson library</h3>
+              <p>
+                Learners can save a lesson as Markdown to an EasyLearn folder
+                in Google Drive, then list and reopen those saved notes in the
+                app’s Library.
               </p>
             </article>
           </div>
@@ -227,9 +256,11 @@ const EasyLearnCaseStudy = () => {
           </div>
           <p className="case-study-architecture-note">
             WebLLM runs in a Web Worker and uses WebGPU for local generation.
-            The FastAPI backend handles Google sign-in and the EasyLearn
-            session; it does not receive prompts or answers for inference.
-            Saving a lesson to Drive is optional and initiated by the learner.
+            The FastAPI backend handles Google sign-in and optional source
+            search. Without web search, questions and answers stay out of the
+            backend. Drive access uses the drive.file scope, and the browser
+            requests it only when the learner mounts the Library or saves a
+            lesson.
           </p>
         </section>
 
@@ -277,13 +308,18 @@ const EasyLearnCaseStudy = () => {
             <p>
               Questions and answers are processed by the local model and are
               not sent to the backend or a hosted model API for inference.
-              Theme preference and model-usage metadata are stored locally,
-              without question or answer text.
+              The active conversation is saved in this browser’s IndexedDB;
+              theme preference and model-usage metadata are stored locally
+              without question or answer text. When web search is enabled,
+              the question and relevant source content are used to inform the
+              answer.
             </p>
             <p>
               Google sign-in verifies the learner with the backend. If the
               learner chooses Save to Drive, the browser requests the
               drive.file permission and uploads the lesson as a Markdown file.
+              The Library lists and opens EasyLearn notes from its Drive
+              folder; it does not search unrelated Drive files.
             </p>
           </div>
         </section>
