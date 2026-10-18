@@ -145,6 +145,38 @@
   background: linear-gradient(125deg, #12172b, #28234e 54%, #0b3940);
 }
 
+.project-card--easylearn .project-banner {
+  background: #fff;
+}
+
+.project-card--easylearn .project-banner::before,
+.project-card--easylearn .project-banner::after {
+  display: none;
+}
+
+.project-card--easylearn .project-logo {
+  display: block;
+  align-self: center;
+  width: min(86%, 390px);
+  height: auto;
+  max-height: 112px;
+  margin-inline: auto;
+  padding: 0;
+  border-radius: 0;
+  object-position: center;
+}
+
+.project-card--easylearn:hover .project-logo {
+  transform: scale(1.04);
+}
+
+.project-card--vides .project-logo {
+  width: min(92%, 390px);
+  height: auto;
+  max-height: 132px;
+  padding: 0;
+}
+
 /* CONTENT */
 .project-content {
   padding: 2.5rem;
@@ -268,6 +300,10 @@
 
   .project-logo {
     height: 72px;
+  }
+
+  .project-card--vides .project-logo {
+    max-height: 108px;
   }
 
   .project-content {

@@ -4,7 +4,7 @@ import {
   FaExternalLinkAlt,
   FaGithub,
 } from "react-icons/fa";
-import EasyLearnLogo from "../assets/EasyLearn.png";
+import EasyLearnLogo from "../assets/easylearn-logo.svg";
 import { BackToProjectsLink } from "./CaseStudyNavigation";
 import "./TrueDriveCaseStudy.css";
 
@@ -12,38 +12,38 @@ const LIVE_URL = "https://easy-learn-ai.netlify.app/";
 const GITHUB_URL = "https://github.com/Rishabh-1029/EasyLearn";
 
 const technologies = [
-  "React",
   "Python",
+  "React",
+  "WebLLM",
+  "WebGPU",
   "FastAPI",
-  "LangChain",
-  "Pydantic",
-  "Uvicorn",
+  "Google Drive API",
 ];
 
 const architectureSteps = [
   {
     number: "01",
-    title: "Learner prompt",
+    title: "Choose a learning mode",
     description:
-      "A learner asks about a topic and looks for an explanation at a useful level of detail.",
+      "The learner picks Quick, Guided, or Deep dive, then asks about a topic.",
   },
   {
     number: "02",
-    title: "React chat interface",
+    title: "React app and Web Worker",
     description:
-      "The frontend collects the topic and presents the generated explanation in a chat experience.",
+      "The browser loads the selected language model and runs it in a Web Worker.",
   },
   {
     number: "03",
-    title: "FastAPI service",
+    title: "Local WebGPU inference",
     description:
-      "The Python API connects the web interface with the language-model workflow.",
+      "WebLLM uses WebGPU to generate the lesson on the learner’s device; the model is cached for later sessions.",
   },
   {
     number: "04",
-    title: "Adaptive response",
+    title: "Optional save to Drive",
     description:
-      "LangChain supports generating a structured explanation that can meet different learning depths.",
+      "With the learner’s consent, the browser uploads the lesson as a Markdown file to Google Drive.",
   },
 ];
 
@@ -56,7 +56,7 @@ const EasyLearnCaseStudy = () => {
     document.title = "EasyLearn Case Study | Rishabh Surana";
     description?.setAttribute(
       "content",
-      "How I conceived and built EasyLearn, an LLM chatbot for structured explanations at different learning depths. Phase 2 is in progress.",
+      "EasyLearn is a browser-based learning app that runs language models locally, explains topics at three depths, and can save lessons to Google Drive.",
     );
 
     return () => {
@@ -91,13 +91,9 @@ const EasyLearnCaseStudy = () => {
               Learn a topic at <span className="gradient-text">your depth.</span>
             </h1>
             <p className="case-study-lede">
-              EasyLearn is an LLM-powered learning chatbot that turns a topic
-              into structured explanations at different levels of depth.
+              EasyLearn is a browser-based learning app that runs a language
+              model on the learner’s device and explains topics at three depths.
             </p>
-
-            <div className="case-study-status-badge">
-              <span aria-hidden="true" /> Phase 2 in progress
-            </div>
 
             <div className="case-study-actions">
               <a
@@ -122,7 +118,7 @@ const EasyLearnCaseStudy = () => {
           <div className="case-study-project-mark">
             <div className="case-study-mark-glow" />
             <img src={EasyLearnLogo} alt="EasyLearn" />
-            <span>Learning · Conversation · Adaptation</span>
+            <span>Local AI · Three learning modes · Google Drive</span>
           </div>
         </header>
 
@@ -135,7 +131,7 @@ const EasyLearnCaseStudy = () => {
           <div>
             <span className="case-study-fact-label">Live app</span>
             <p>Available to explore</p>
-            <small>Phase 2 is in progress</small>
+            <small>Local model inference in the browser</small>
           </div>
           <div>
             <span className="case-study-fact-label">Built with</span>
@@ -155,13 +151,13 @@ const EasyLearnCaseStudy = () => {
           <div className="case-study-section-copy">
             <p>
               A learner may want a quick intuition, a guided explanation, or a
-              deeper technical breakdown of the same subject. A fixed answer
-              often misses that difference.
+              deeper technical breakdown of the same subject. EasyLearn offers
+              Quick, Guided, and Deep dive modes for those needs.
             </p>
             <p>
-              EasyLearn is my idea for making those levels available in a single
-              chat experience, with explanations organized to make a topic
-              easier to follow.
+              Each mode shapes the lesson differently: Quick gives the core
+              idea, Guided builds it step by step, and Deep dive adds detail,
+              an example, and a self-check.
             </p>
           </div>
         </section>
@@ -176,24 +172,24 @@ const EasyLearnCaseStudy = () => {
               <span className="case-study-feature-number">01</span>
               <h3>Different learning depths</h3>
               <p>
-                The chatbot is designed to present a topic at different levels
-                of depth, helping match the explanation to what a learner needs.
+                Quick, Guided, and Deep dive give learners three ways to
+                explore the same concept.
               </p>
             </article>
             <article className="case-study-feature-card">
               <span className="case-study-feature-number">02</span>
               <h3>Structured explanations</h3>
               <p>
-                Responses are organized to help learners follow a topic instead
-                of receiving an undifferentiated block of generated text.
+                Guided lessons build step by step; Deep dive adds an example
+                and self-check alongside more detail.
               </p>
             </article>
             <article className="case-study-feature-card">
               <span className="case-study-feature-number">03</span>
               <h3>Chat-based interaction</h3>
               <p>
-                A conversational interface gives learners a direct way to ask
-                about concepts and continue exploring them.
+                Learners can ask about concepts while keeping their prompts and
+                answers on their own device during inference.
               </p>
             </article>
           </div>
@@ -201,8 +197,8 @@ const EasyLearnCaseStudy = () => {
 
         <section className="case-study-section case-study-architecture">
           <div className="case-study-section-heading">
-            <span className="case-study-section-index">03 / SYSTEM DESIGN</span>
-            <h2>A focused full-stack path from question to explanation.</h2>
+            <span className="case-study-section-index">04 / SYSTEM DESIGN</span>
+            <h2>The model runs in the browser; the backend handles sign-in.</h2>
           </div>
           <div
             className="case-study-architecture-flow"
@@ -230,24 +226,64 @@ const EasyLearnCaseStudy = () => {
             ))}
           </div>
           <p className="case-study-architecture-note">
-            The frontend uses React. A FastAPI service built with Pydantic and
-            Uvicorn connects it to the LangChain-based LLM workflow.
+            WebLLM runs in a Web Worker and uses WebGPU for local generation.
+            The FastAPI backend handles Google sign-in and the EasyLearn
+            session; it does not receive prompts or answers for inference.
+            Saving a lesson to Drive is optional and initiated by the learner.
           </p>
+        </section>
+
+        <section className="case-study-section case-study-models">
+          <div className="case-study-section-heading">
+            <span className="case-study-section-index">
+              03 / MODELS ON DEVICE
+            </span>
+            <h2>Choose a model that fits the device.</h2>
+          </div>
+          <div className="case-study-models-content">
+            <div className="case-study-model-grid">
+              <article className="case-study-model-card">
+                <span>01B</span>
+                <h3>Llama 3.2 1B</h3>
+                <p>A compact option for getting started with local lessons.</p>
+              </article>
+              <article className="case-study-model-card">
+                <span>02B</span>
+                <h3>Gemma 2 2B</h3>
+                <p>An alternative small model for on-device explanations.</p>
+              </article>
+              <article className="case-study-model-card">
+                <span>03B</span>
+                <h3>Llama 3.2 3B</h3>
+                <p>A larger model option for devices that can support it.</p>
+              </article>
+            </div>
+            <p className="case-study-models-note">
+              WebLLM downloads the selected model the first time it is used and
+              caches it for later sessions. Generation speed and WebGPU support
+              depend on the browser and device.
+            </p>
+          </div>
         </section>
 
         <section className="case-study-section case-study-validation">
           <div className="case-study-section-heading">
-            <span className="case-study-section-index">04 / WHAT’S NEXT</span>
-            <h2>EasyLearn is moving into its second phase.</h2>
+            <span className="case-study-section-index">
+              05 / PRIVACY AND SAVING
+            </span>
+            <h2>Lessons stay on device unless the learner chooses to save.</h2>
           </div>
           <div className="case-study-section-copy">
             <p>
-              Phase 2 is currently in progress. I’m continuing development on
-              the project while keeping the live app available to explore.
+              Questions and answers are processed by the local model and are
+              not sent to the backend or a hosted model API for inference.
+              Theme preference and model-usage metadata are stored locally,
+              without question or answer text.
             </p>
             <p>
-              The embedded app shows the current deployment; use the live link
-              above if the preview does not load in this page.
+              Google sign-in verifies the learner with the backend. If the
+              learner chooses Save to Drive, the browser requests the
+              drive.file permission and uploads the lesson as a Markdown file.
             </p>
           </div>
         </section>
@@ -255,7 +291,7 @@ const EasyLearnCaseStudy = () => {
         <section className="case-study-demo-section">
           <div className="case-study-demo-heading">
             <div>
-              <span className="case-study-section-index">05 / LIVE DEMO</span>
+              <span className="case-study-section-index">06 / LIVE DEMO</span>
               <h2>
                 Try <span className="gradient-text">EasyLearn</span>
               </h2>
@@ -267,7 +303,7 @@ const EasyLearnCaseStudy = () => {
           <div className="case-study-iframe-frame">
             <iframe
               src={LIVE_URL}
-              title="Live EasyLearn learning chatbot"
+              title="Live EasyLearn learning app"
               loading="lazy"
               referrerPolicy="strict-origin-when-cross-origin"
               allow="fullscreen"

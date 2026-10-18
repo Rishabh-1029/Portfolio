@@ -1,4 +1,4 @@
-import EasyLearn from "../assets/EasyLearn.png";
+import EasyLearn from "../assets/easylearn-logo.svg";
 import VIDESLOGO from "../assets/VIDES.png";
 import TrurDrive from "../assets/TrueDrive.png";
 import VasitumLogo from "../assets/vaistum.png";
@@ -15,6 +15,17 @@ export const RATEEX_TECH_STACK_GROUPS = [
 export const RATEEX_TECH_STACK = RATEEX_TECH_STACK_GROUPS.flatMap(
   ({ technologies }) => technologies,
 );
+
+export const EASY_LEARN_DESCRIPTION =
+  "A LLM-based learning app with Quick, Guided, and Deep dive modes for notes generation. It runs LLM locally with WebGPU and can save lessons to Google Drive.";
+export const EASY_LEARN_TECH_STACK = [
+  "Python",
+  "React",
+  "WebLLM",
+  "WebGPU",
+  "FastAPI",
+  "Google Drive API",
+];
 
 export const projectsData = [
   {
@@ -33,9 +44,8 @@ export const projectsData = [
     id: 2,
     title: "EasyLearn",
     period: "November 2025 – December 2025",
-    description:
-      "LLM-based chatbot designed to help learners understand topics at different depths of understanding through structured and adaptive explanations.",
-    tech: ["Python", "LangChain", "ReactJS", "FastAPI", "Pydantic", "Uvicorn"],
+    description: EASY_LEARN_DESCRIPTION,
+    tech: EASY_LEARN_TECH_STACK,
     gradient: "blue-gradient",
     live: "https://easy-learn-ai.netlify.app/",
     github: "https://github.com/Rishabh-1029/EasyLearn",

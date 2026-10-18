@@ -5,7 +5,7 @@ import { usePublicContent } from "../content/usePublicContent.js";
 import "./Projects.css";
 
 // Original Image Assets
-import EasyLearn from "../assets/EasyLearn.png";
+import EasyLearn from "../assets/easylearn-logo.svg";
 import VIDESLOGO from "../assets/VIDES.png";
 import TrurDrive from "../assets/TrueDrive.png";
 import VasitumLogo from "../assets/vaistum.png";
@@ -13,6 +13,10 @@ import ANPRLOGO from "../assets/ANPRLOGO.jpeg";
 import BlogstoryLogo from "../assets/BlogStory.png";
 import RateExLogo from "../assets/RateEx.svg";
 import PortfolioLogo from "../assets/Portfolio.svg";
+import {
+  EASY_LEARN_DESCRIPTION,
+  EASY_LEARN_TECH_STACK,
+} from "./projectsData.js";
 
 // Mappings for older items seamlessly transitioning
 const assetMap = {
@@ -143,17 +147,33 @@ const Projects = () => {
               };
               const normalizedTitle = normalizeProjectTitle(project.title);
               const caseStudyRoute = caseStudyRoutes[normalizedTitle];
-              const projectLogo = ["portfolio", "rateex"].includes(
-                normalizedTitle,
-              )
-                ? mappedAssets.logo
-                : project.logo || mappedAssets.logo;
+              const projectLogo =
+                ["portfolio", "rateex", "easylearn"].includes(normalizedTitle)
+                  ? mappedAssets.logo
+                  : project.logo || mappedAssets.logo;
+              const projectDescription =
+                normalizedTitle === "easylearn"
+                  ? EASY_LEARN_DESCRIPTION
+                  : project.description;
+              const projectTech =
+                normalizedTitle === "easylearn"
+                  ? EASY_LEARN_TECH_STACK
+                  : project.tech
+                      .split(",")
+                      .map((tech) => tech.trim())
+                      .filter(Boolean);
 
               return (
                 <MotionDiv
                   key={project.id}
                   className={`project-card glass-card${
                     caseStudyRoute ? " project-card--clickable" : ""
+                  }${
+                    normalizedTitle === "easylearn"
+                      ? " project-card--easylearn"
+                      : ""
+                  }${
+                    normalizedTitle === "vides" ? " project-card--vides" : ""
                   }`}
                   style={{
                     "--project-glow": mappedAssets.glow || "rgba(0, 240, 255, 0.2)",
@@ -187,14 +207,13 @@ const Projects = () => {
                   <div className="project-content">
                     <span className="project-period">{project.period}</span>
                     <h3>{project.title}</h3>
-                    <p>{project.description}</p>
+                    <p>{projectDescription}</p>
 
                     {/* Tech Stack */}
                     <div className="project-tech">
-                      {project.tech &&
-                        project.tech
-                          .split(",")
-                          .map((tech, i) => <span key={i}>{tech.trim()}</span>)}
+                      {projectTech.map((tech, i) => (
+                        <span key={i}>{tech}</span>
+                      ))}
                     </div>
 
                     {/* Links */}
