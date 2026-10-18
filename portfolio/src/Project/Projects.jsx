@@ -144,7 +144,7 @@ const Projects = () => {
               const normalizedTitle = normalizeProjectTitle(project.title);
               const caseStudyRoute = caseStudyRoutes[normalizedTitle];
               const projectLogo =
-                ["portfolio", "rateex", "easylearn"].includes(normalizedTitle)
+                ["portfolio", "rateex"].includes(normalizedTitle)
                   ? mappedAssets.logo
                   : project.logo || mappedAssets.logo;
               const projectTech = project.tech

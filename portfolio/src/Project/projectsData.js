@@ -17,7 +17,7 @@ export const RATEEX_TECH_STACK = RATEEX_TECH_STACK_GROUPS.flatMap(
 );
 
 export const EASY_LEARN_DESCRIPTION =
-  "A LLM-based learning app with Quick, Guided, and Deep dive modes for notes generation. It runs LLM locally with WebGPU and can save lessons to Google Drive.";
+  "A LLM-based learning app with Quick, Guided, and Deep dive modes. It runs SLMs locally with WebGPU to generate explanation notes and can save lessons to Google Drive.";
 export const EASY_LEARN_TECH_STACK = [
   "Python",
   "React",
